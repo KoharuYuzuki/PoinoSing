@@ -1,0 +1,27 @@
+{
+  "name": "poinosing",
+  "version": "1.0.0",
+  "main": "src/app.tsx",
+  "type": "module",
+  "scripts": {
+    "build": "bun run build.ts",
+    "module-list": "bun run module-list.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-webgpu": "^4.22.0",
+    "idb-keyval": "^6.2.1",
+    "pathe": "^1.1.2",
+    "pinia": "^2.2.5",
+    "tailwindcss": "^3.4.14",
+    "unstorage": "^1.13.1",
+    "vue": "^3.4.38",
+    "zod": "^3.23.8"
+  }
+}

@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Zen Maru Gothic", serif;
+  @apply text-main font-bold appearance-none;
+}
+
+*.selection-clear::selection {
+  background-color: transparent;
+}
+
+select,
+input[type="range"] {
+  @apply cursor-pointer;
+}
+
+input[type="range"] {
+  @apply h-1.5 rounded-[0.1875rem] bg-main-mid appearance-none;
+
+  &::-webkit-slider-thumb {
+    @apply w-3 h-3 rounded-[50%] bg-accent shadow-none appearance-none;
+  }
+  &::-moz-range-thumb {
+    @apply w-3 h-3 rounded-[50%] bg-accent border-none;
+  }
+}
+
+input[type="number"] {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    @apply appearance-none;
+  }
+
+  -moz-appearance: textfield;
+}
+
+dialog {
+  @apply overflow-visible;
+
+  &::backdrop {
+    @apply bg-transparent;
+  }
+}
+
+body {
+  @apply w-dvw h-dvh bg-main overflow-hidden;
+
+  &.is-firefox {
+    * {
+      scrollbar-width: thin;
+    }
+    .scrollbar-light {
+      @apply [scrollbar-color:_theme(colors.accent)_transparent];
+    }
+    .scrollbar-dark {
+      @apply [scrollbar-color:_theme(colors.main)_transparent];
+    }
+  }
+
+  &:not(.is-firefox) {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+    .scrollbar-light {
+      &::-webkit-scrollbar-thumb {
+        @apply bg-accent;
+      }
+    }
+    .scrollbar-dark {
+      &::-webkit-scrollbar-thumb {
+        @apply bg-main;
+      }
+    }
+  }
+}
+
+#app {
+  @apply w-full h-full p-4 flex flex-col gap-4;
+}
