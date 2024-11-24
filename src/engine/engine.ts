@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs'
 import '@tensorflow/tfjs-backend-webgpu'
 import { WebGPUBackend } from '@tensorflow/tfjs-backend-webgpu/dist/backend_webgpu'
 import {
-  synthFs, kanas, envKeyVolumes, bpmSchema, noteSchema, speakerVoiceSchema
+  kanas, envKeyVolumes, bpmSchema, noteSchema, speakerVoiceSchema
 } from './schemata'
 import type {
   KanaEnum, EnvKeyEnum, Note, SpeakerVoice
@@ -178,11 +178,10 @@ export class PoinoSingEngine {
     phonemes: EnvKeyEnum[],
     voice: SpeakerVoice
   ) {
-    const fsMag    = synthFs / voice.fs
-    const fs       = int(voice.fs * fsMag)
-    const segLen   = int(voice.segLen * fsMag)
+    const fs       = voice.fs
+    const segLen   = voice.segLen
     const specLen  = ((segLen % 2) === 0) ? ((segLen / 2) + 1) : ((segLen + 1) / 2)
-    const shiftLen = int(voice.shiftLen * fsMag)
+    const shiftLen = voice.shiftLen
     const shiftNum = voice.shiftNum
     const waveLen  = int(fs * duration)
     const freq     = pitch2freq(pitch)
@@ -392,7 +391,7 @@ export class PoinoSingEngine {
         const adjuster = tf.divNoNan([volume], max)
         const adjusted = tf.mul(segment, adjuster)
 
-        const begin = position
+        const begin = Math.round(position)
         const end = begin + segLen + (shiftLen * shiftNum)
         const padBefore = tf.zeros([begin])
         const padAfter = tf.zeros([waveLen - end])
@@ -415,23 +414,11 @@ export class PoinoSingEngine {
         return merged
       })
 
-      position += Math.min(
-        Math.round(fs / f0),
-        fs
-      )
+      position += Math.min(fs / f0, fs)
     }
 
     prevSegment?.dispose()
     window.dispose()
-
-    wave = tf.tidy(() => {
-      const indices = [...new Array(int(waveLen / fsMag))].map((_, i) => int(i * fsMag))
-      const resampled = tf.gather(wave, indices)
-
-      wave.dispose()
-
-      return resampled
-    })
 
     const volSegResampled = resample(volSeg, wave.shape[0])
 

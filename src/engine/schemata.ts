@@ -5,8 +5,6 @@ export type TypesEqual<A, B> = A extends B ? B extends A ? true : false : false
 const checkEven = (value: number) => (value % 2) === 0
 const evenMsg   = (value: number) => ({ message: `${value} is not an even number` })
 
-export const synthFs = 96000
-
 export const kanas = [
   '、',
   'きゃ',
