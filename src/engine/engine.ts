@@ -2,14 +2,13 @@ import * as tf from '@tensorflow/tfjs'
 import '@tensorflow/tfjs-backend-webgpu'
 import { WebGPUBackend } from '@tensorflow/tfjs-backend-webgpu/dist/backend_webgpu'
 import {
-  kanas, envKeyVolumes, bpmSchema, noteSchema, speakerVoiceSchema
+  kanas, envKeyVolumes, bpmSchema, noteSchema, speakerVoiceComputedSchema
 } from './schemata'
 import type {
-  KanaEnum, EnvKeyEnum, Note, SpeakerVoice
+  KanaEnum, EnvKeyEnum, Note, SpeakerVoiceComputed
 } from './schemata'
 import {
-  canUseWebGPU, rfftfreq, argMin, avg, resample,
-  int, linspace, interp, tick2sec, pitch2freq
+  canUseWebGPU, int, tick2sec, pitch2freq, computeSpeakerVoice
 } from './utils'
 import { laychieVoice } from './speakers/laychie'
 import { layneyVoice } from './speakers/layney'
@@ -45,39 +44,11 @@ export class PoinoSingEngine {
   synthesizeNote(
     bpm: number,
     note: Note,
-    speakerVoice: SpeakerVoice
-  ) {
-    return new Promise<{
-      wave: Float32Array
-      offset: number
-    }>((resolve, reject) => {
-      tf.tidy(() => {
-        this._synthesizeNote(
-          bpm,
-          note,
-          speakerVoice
-        )
-        .then(resolve)
-        .catch(reject)
-      })
-    })
-  }
-
-  static getSpeakers() {
-    return {
-      laychie: laychieVoice,
-      layney:  layneyVoice
-    }
-  }
-
-  private _synthesizeNote(
-    bpm: number,
-    note: Note,
-    speakerVoice: SpeakerVoice
+    speakerVoice: SpeakerVoiceComputed
   ) {
     bpmSchema.parse(bpm)
     noteSchema.parse(note)
-    speakerVoiceSchema.parse(speakerVoice)
+    speakerVoiceComputedSchema.parse(speakerVoice)
 
     const voice = speakerVoice
     const fs    = speakerVoice.fs
@@ -120,18 +91,18 @@ export class PoinoSingEngine {
 
     if (waveLen <= 0) {
       const raw = new Float32Array()
-      return Promise.resolve({
+      return {
         wave: raw,
         offset: 0
-      })
+      }
     }
 
     if (['、', 'q'].includes(lyric)) {
       const raw = new Float32Array(waveLen)
-      return Promise.resolve({
+      return {
         wave: raw,
         offset: 0
-      })
+      }
     }
 
     const pitch = note.pitch
@@ -139,34 +110,36 @@ export class PoinoSingEngine {
     const volumeSeg = note.volumeSeg
     const phonemeTimingPercent = phonemeTimings.map((tick) => tick2sec(tick + -offsetTick, bpm) / duration)
 
-    const wave = tf.tidy(() => {
-      return this.synthWave(
-        duration,
-        pitch,
-        f0Seg,
-        volumeSeg,
-        phonemeTimingPercent,
-        phonemes,
-        voice
-      )
-    })
+    const wave = this.synthWave(
+      duration,
+      pitch,
+      f0Seg,
+      volumeSeg,
+      phonemeTimingPercent,
+      phonemes,
+      voice
+    )
 
-    return new Promise<{
-      wave: Float32Array
-      offset: number
-    }>((resolve, reject) => {
-      try {
-        const raw = wave.dataSync<'float32'>()
-        resolve({
-          wave: raw,
-          offset: offsetTick
-        })
-      } catch (e) {
-        reject(e)
-      }
+    const raw = Float32Array.from(wave)
 
-      wave.dispose()
-    })
+    return {
+      wave: raw,
+      offset: offsetTick
+    }
+  }
+
+  static getSpeakers() {
+    return {
+      laychie: laychieVoice,
+      layney:  layneyVoice
+    }
+  }
+
+  static getComputedSpeakers() {
+    return {
+      laychie: computeSpeakerVoice(laychieVoice),
+      layney:  computeSpeakerVoice(layneyVoice)
+    }
   }
 
   private synthWave(
@@ -176,263 +149,53 @@ export class PoinoSingEngine {
     volSeg: number[],
     timingPercent: number[],
     phonemes: EnvKeyEnum[],
-    voice: SpeakerVoice
+    voice: SpeakerVoiceComputed
   ) {
-    const fs       = voice.fs
-    const segLen   = voice.segLen
-    const specLen  = ((segLen % 2) === 0) ? ((segLen / 2) + 1) : ((segLen + 1) / 2)
-    const shiftLen = voice.shiftLen
-    const shiftNum = voice.shiftNum
-    const waveLen  = int(fs * duration)
-    const freq     = pitch2freq(pitch)
+    const fs      = voice.fs
+    const waveLen = int(fs * duration)
+    const freq    = pitch2freq(pitch)
 
-    const specs = Object.fromEntries(
-      Object.keys(voice.envelopes)
-      .filter((key) => phonemes.includes(key as EnvKeyEnum))
-      .map((key) => {
-        const envKey = key as EnvKeyEnum
-        const env = voice.envelopes[envKey]
-
-        if (env === undefined) {
-          return [
-            envKey,
-            linspace(0, 0, specLen)
-          ]
-        }
-
-        const x: number[] = []
-        const y: number[] = []
-        const z = linspace(0, fs / 2, specLen)
-
-        env.forEach((point) => {
-          x.push(point[0])
-          y.push(Math.pow(10, point[1]) - 1)
-        })
-
-        const interpolated = interp(x, y, z)
-
-        return [
-          envKey,
-          interpolated
-        ]
-      })
-    ) as { [key in EnvKeyEnum]: number[] }
-
-    const voicedAp = (f0: number) => {
-      const f0Mag = 20
-      const ratio = (f0 * f0Mag) / (fs / 2)
-      const tanhMag = 10
-      const apMag = 0.6
-
-      return tf.tidy(() => {
-        return tf.mul(
-          tf.div(
-            tf.add(
-              tf.tanh(
-                tf.linspace(
-                  -ratio * tanhMag,
-                  (1 - ratio) * tanhMag,
-                  specLen
-                )
-              ),
-              1
-            ),
-            2
-          ),
-          apMag
-        )
-      })
-    }
-
-    const unvoicedAp = () => {
-      const apMag = 0.6
-      return tf.fill([specLen], apMag)
-    }
-
-    let wave = tf.zeros([waveLen])
+    const wave: number[] = new Array(waveLen).fill(0)
     let position = 0
 
-    let prevEnvKey: EnvKeyEnum | null = null
-    let prevSegment: tf.Tensor | null = null
-    let prevSegmentPosition = 0
-
-    const a4Pitch = 69
-    const a4Freq = pitch2freq(a4Pitch)
-    const segmentDisposingThreshold = Math.round(fs / a4Freq)
-
-    const rfftFreqs = rfftfreq(segLen, 1.0 / fs)
-    const specSplitFrerq = 1000
-    const specSplitFrerqIndex = argMin(rfftFreqs.map((rfftFreq) => Math.abs(rfftFreq - specSplitFrerq)))
-
-    const window = tf.signal.hammingWindow(segLen)
-
-    while ((position + segLen + (shiftLen * shiftNum)) < waveLen) {
+    while (position < waveLen) {
       const percent = position / waveLen
-      const f0 = f0Seg[int(f0Seg.length * percent)] * freq
+      const f0 = f0Seg[Math.floor(f0Seg.length * percent)] * freq
 
       const indexApproximate = timingPercent.findLastIndex((_percent) => _percent <= percent)
       if (indexApproximate === -1) break
 
       const envKey = phonemes[indexApproximate]
 
-      let disposeSegment: boolean
+      const waves = voice.waves[envKey]
+      if (!waves) break
 
-      if (envKey !== prevEnvKey) {
-        disposeSegment = true
-      } else if ((position - prevSegmentPosition) < segmentDisposingThreshold) {
-        disposeSegment = false
-      } else {
-        disposeSegment = true
+      const waveIndex = Math.floor(Math.random() * waves.length)
+      const segment = waves[waveIndex]
+
+      const volume = (
+        envKeyVolumes[envKey] *
+        (0.5 + (Math.sin(Math.PI * (Math.log10(percent * 9 + 1) / Math.log10(10))) * 0.5))
+      )
+
+      const max = segment.map((x) => Math.abs(x)).reduce((a, b) => Math.max(a, b))
+      const adjuster = (max != 0) ? volume / max : 0
+      const adjusted = segment.map((x) => x * adjuster)
+
+      const begin = Math.round(position)
+      const end = begin + adjusted.length
+
+      if (end >= waveLen) break
+
+      for (let i = 0; i < adjusted.length; i++) {
+        wave[begin + i] += adjusted[i]
       }
-
-      let segment: tf.Tensor
-
-      if (disposeSegment) {
-        if (prevSegment !== null) {
-          prevSegment.dispose()
-        }
-
-        const spec = specs[envKey]
-
-        const specLowAvg = avg(spec.slice(0, specSplitFrerqIndex))
-        const specHighAvg = avg(spec.slice(specSplitFrerqIndex))
-
-        const ap = (specHighAvg > specLowAvg) ? unvoicedAp() : voicedAp(f0)
-
-        const phase = tf.tidy(() => {
-          const phase = tf.mul(
-            tf.randomUniform([specLen], 0, 2 * Math.PI),
-            ap
-          )
-
-          ap.dispose()
-
-          return phase
-        })
-
-        segment = tf.tidy(() => {
-          const ifft = tf.reshape(
-            tf.spectral.irfft(
-              tf.mul(
-                tf.complex(tf.zerosLike(spec), spec),
-                tf.complex(tf.cos(phase), tf.sin(phase))
-              )
-            ),
-            [segLen]
-          )
-
-          const leftBegin = segLen / 2
-          const leftLen = segLen / 2
-
-          const rightBegin = 0
-          const rightLen = segLen / 2
-
-          const edited = tf.mul(
-            tf.concat([
-              ifft.slice(leftBegin, leftLen),
-              ifft.slice(rightBegin, rightLen)
-            ]),
-            window
-          )
-
-          const reverbed = tf.tidy(() => {
-            let reverbed = tf.zeros([segLen + (shiftLen * shiftNum)])
-
-            for (let i = 0; i < (shiftNum + 1); i++) {
-              const sliced = reverbed.slice(shiftLen * i, segLen)
-              const added = tf.add(
-                sliced,
-                edited
-              )
-
-              const indices = tf.tensor2d(
-                [...new Array(segLen)].map((_, j) => (shiftNum * i) + j),
-                [segLen, 1],
-                'int32'
-              )
-
-              const updated = tf.tensorScatterUpdate(
-                reverbed,
-                indices,
-                added
-              )
-
-              sliced.dispose()
-              added.dispose()
-              indices.dispose()
-              reverbed.dispose()
-
-              reverbed = updated
-            }
-
-            return reverbed
-          })
-
-          phase.dispose()
-          ifft.dispose()
-          edited.dispose()
-
-          return reverbed
-        })
-
-        prevEnvKey = envKey
-        prevSegment = segment
-        prevSegmentPosition = position
-      } else {
-        segment = prevSegment as tf.Tensor
-      }
-
-      wave = tf.tidy(() => {
-        const volume = (
-          envKeyVolumes[envKey] *
-          (0.5 + (Math.sin(Math.PI * (Math.log10(percent * 9 + 1) / Math.log10(10))) * 0.5))
-        )
-        const max = tf.max(tf.abs(segment))
-        const adjuster = tf.divNoNan([volume], max)
-        const adjusted = tf.mul(segment, adjuster)
-
-        const begin = Math.round(position)
-        const end = begin + segLen + (shiftLen * shiftNum)
-        const padBefore = tf.zeros([begin])
-        const padAfter = tf.zeros([waveLen - end])
-        const merged = tf.add(
-          wave,
-          tf.concat([
-            padBefore,
-            adjusted,
-            padAfter
-          ])
-        )
-
-        wave.dispose()
-        max.dispose()
-        adjuster.dispose()
-        adjusted.dispose()
-        padBefore.dispose()
-        padAfter.dispose()
-
-        return merged
-      })
 
       position += Math.min(fs / f0, fs)
     }
 
-    prevSegment?.dispose()
-    window.dispose()
+    const adjusted = wave.map((x, i) => x * volSeg[Math.floor(volSeg.length * (i / waveLen))])
 
-    const volSegResampled = resample(volSeg, wave.shape[0])
-
-    wave = tf.tidy(() => {
-      const adjusted = tf.mul(
-        wave,
-        volSegResampled
-      )
-
-      wave.dispose()
-
-      return adjusted
-    })
-
-    return wave
+    return adjusted
   }
 }

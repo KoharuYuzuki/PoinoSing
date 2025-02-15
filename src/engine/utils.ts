@@ -1,5 +1,6 @@
 import * as tf from '@tensorflow/tfjs'
 import { z } from 'zod'
+import type { SpeakerVoice, SpeakerVoiceComputed, EnvKeyEnum } from './schemata'
 
 export const canUseWebGPU = ('gpu' in navigator)
 
@@ -285,4 +286,147 @@ export function pitch2freq (pitch: number) {
 
 export function freq2pitch (freq: number) {
   return 69 + 12 * Math.log2(freq / 440)
+}
+
+export function hanningWindow (num: number) {
+  checkPositiveInt(num)
+
+  let window: number[] = []
+
+  for (let i = 0; i < num; i++) {
+    const w = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (num - 1))
+    window.push(w)
+  }
+
+  return window
+}
+
+export function computeSpeakerVoice (voice: SpeakerVoice) {
+  const fs       = voice.fs
+  const segLen   = voice.segLen
+  const rfftLen  = ((segLen % 2) === 0) ? ((segLen / 2) + 1) : ((segLen + 1) / 2)
+  const shiftLen = voice.shiftLen
+  const shiftNum = voice.shiftNum
+
+  const specs = Object.fromEntries(
+    Object.keys(voice.envelopes).map((key) => {
+      const envKey = key as EnvKeyEnum
+      const env = voice.envelopes[envKey]
+
+      if (env === undefined) {
+        return [
+          envKey,
+          new Array(rfftLen).fill(0) as number[]
+        ]
+      }
+
+      const x: number[] = []
+      const y: number[] = []
+      const z = linspace(0, fs / 2, rfftLen)
+
+      env.forEach((point) => {
+        x.push(point[0])
+        y.push(Math.pow(10, point[1]) - 1)
+      })
+
+      const interpolated = interp(x, y, z)
+
+      return [
+        envKey,
+        interpolated
+      ]
+    })
+  )
+
+  const rfftFreqs = rfftfreq(segLen, 1.0 / fs)
+  const specSplitFrerq = 1000
+  const specSplitFrerqIndex = argMin(rfftFreqs.map((rfftFreq) => Math.abs(rfftFreq - specSplitFrerq)))
+
+  const voicedAp = (() => {
+    const ratio = 0.4
+    const tanhMag = 20
+    const apMag = 0.6
+
+    return linspace(
+      -ratio * tanhMag,
+      (1 - ratio) * tanhMag,
+      rfftLen
+    ).map((x) => (Math.tanh(x) + 1) / 2 * apMag)
+  })()
+
+  const unvoicedAp = (() => {
+    const apMag = 0.6
+    return new Array(rfftLen).fill(apMag)
+  })()
+
+  const numWaves = 8
+  const window = hanningWindow(segLen)
+
+  const waves = Object.fromEntries(
+    Object.keys(specs).map((key) => {
+      const envKey = key as EnvKeyEnum
+      const spec = specs[envKey]
+
+      const specLowAvg = avg(spec.slice(0, specSplitFrerqIndex))
+      const specHighAvg = avg(spec.slice(specSplitFrerqIndex))
+
+      const ap = (specLowAvg >= specHighAvg) ? voicedAp : unvoicedAp
+
+      const leftBegin = segLen / 2
+      const leftEnd = segLen
+
+      const rightBegin = 0
+      const rightEnd = segLen / 2
+
+      const waves: number[][] = []
+
+      for (let i = 0; i < numWaves; i++) {
+        const phase = [...new Array(rfftLen)].map((_, i) => Math.random() * (2 * Math.PI) * ap[i])
+
+        const ifft = tf.reshape(
+          tf.spectral.irfft(
+            tf.mul(
+              tf.complex(tf.zerosLike(spec), spec),
+              tf.complex(tf.cos(phase), tf.sin(phase))
+            )
+          ),
+          [segLen]
+        ).dataSync<'float32'>()
+
+        const edited = [
+          ...ifft.slice(leftBegin, leftEnd),
+          ...ifft.slice(rightBegin, rightEnd),
+        ].map((x, i) => x * window[i])
+
+        const reverbed: number[] = new Array(segLen + (shiftLen * shiftNum)).fill(0)
+
+        for (let j = 0; j < (shiftNum + 1); j++) {
+          const shift = shiftLen * j
+
+          for (let k = 0; k < segLen; k++) {
+            reverbed[shift + k] += edited[k]
+          }
+        }
+
+        waves.push(reverbed)
+      }
+
+      return [
+        envKey,
+        waves
+      ]
+    })
+  )
+
+  const computed: SpeakerVoiceComputed = {
+    id:       voice.id,
+    name:     voice.name,
+    fs:       voice.fs,
+    shiftLen: voice.shiftLen,
+    shiftNum: voice.shiftNum,
+    waves:    waves,
+    kanas:    voice.kanas
+  }
+
+  return computed
 }

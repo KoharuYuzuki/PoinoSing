@@ -4,7 +4,7 @@ import { drawWave as _drawWave, drawSpec as _drawSpec } from './utils'
 import type { TypesEqual } from './utils'
 
 const engine = new PoinoSingEngine()
-const speakers = PoinoSingEngine.getSpeakers()
+let speakers: schemata.SpeakerVoices
 
 export interface WorkerResult {
   id:   string | null
@@ -112,6 +112,7 @@ function checkBackend (id: string) {
 function init (id: string) {
   engine.init()
   .then(() => {
+    speakers = PoinoSingEngine.getComputedSpeakers()
     postMessage(id, true, null)
   })
   .catch((e) => {
@@ -121,18 +122,17 @@ function init (id: string) {
 }
 
 function synthNote (id: string, data: SynthData) {
-  engine.synthesizeNote(
-    data.bpm,
-    data.note,
-    speakers[data.speakerId],
-  )
-  .then((result) => {
+  try {
+    const result = engine.synthesizeNote(
+      data.bpm,
+      data.note,
+      speakers[data.speakerId],
+    )
     postMessage(id, true, result)
-  })
-  .catch((e) => {
+  } catch (e) {
     console.error(e)
     postMessage(id, false, e)
-  })
+  }
 }
 
 function drawWave (id: string, data: WaveDrawData) {

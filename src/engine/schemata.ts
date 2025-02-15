@@ -220,8 +220,11 @@ export const pointXSchema = z.number().min(0).max(48000)
 export const pointYSchema = z.number().min(0).max(1)
 export const pointSchema  = z.tuple([pointXSchema, pointYSchema])
 export const pointsSchema = z.array(pointSchema)
+export const wavesSchema  = z.number().array().array()
 
 export const envRecordSchema  = z.record(envKeyEnumSchema, pointsSchema)
+export const waveRecordSchema = z.record(envKeyEnumSchema, wavesSchema)
+
 export const envLenSchema     = z.object({ envKey: envKeyEnumSchema, len: z.number().min(0).nullable() })
 export const kanaRecordSchema = z.record(kanaEnumSchema, z.array(envLenSchema))
 
@@ -248,8 +251,18 @@ export interface SpeakerVoice {
   kanas:     z.infer<typeof kanaRecordSchema>
 }
 
+export interface SpeakerVoiceComputed {
+  id:       SpeakerIdEnum
+  name:     string
+  fs:       48000
+  shiftLen: number
+  shiftNum: number
+  waves:    z.infer<typeof waveRecordSchema>
+  kanas:    z.infer<typeof kanaRecordSchema>
+}
+
 export type SpeakerVoices = {
-  [key in SpeakerIdEnum]: SpeakerVoice
+  [key in SpeakerIdEnum]: SpeakerVoiceComputed
 }
 
 export const bpmSchema = z.number().min(1)
@@ -275,9 +288,20 @@ export const speakerVoiceSchema = z.object({
   kanas:     kanaRecordSchema
 })
 
-{ const _: TypesEqual<KanaEnum,      z.infer<typeof kanaEnumSchema>>      = true }
-{ const _: TypesEqual<EnvKeyEnum,    z.infer<typeof envKeyEnumSchema>>    = true }
-{ const _: TypesEqual<SpeakerIdEnum, z.infer<typeof speakerIdEnumSchema>> = true }
-{ const _: TypesEqual<BPM,           z.infer<typeof bpmSchema>>           = true }
-{ const _: TypesEqual<Note,          z.infer<typeof noteSchema>>          = true }
-{ const _: TypesEqual<SpeakerVoice,  z.infer<typeof speakerVoiceSchema>>  = true }
+export const speakerVoiceComputedSchema = z.object({
+  id:       speakerIdEnumSchema,
+  name:     z.string(),
+  fs:       z.literal(48000),
+  shiftLen: z.number().int().min(1),
+  shiftNum: z.number().int().min(0),
+  waves:    waveRecordSchema,
+  kanas:    kanaRecordSchema
+})
+
+{ const _: TypesEqual<KanaEnum,             z.infer<typeof kanaEnumSchema>>             = true }
+{ const _: TypesEqual<EnvKeyEnum,           z.infer<typeof envKeyEnumSchema>>           = true }
+{ const _: TypesEqual<SpeakerIdEnum,        z.infer<typeof speakerIdEnumSchema>>        = true }
+{ const _: TypesEqual<BPM,                  z.infer<typeof bpmSchema>>                  = true }
+{ const _: TypesEqual<Note,                 z.infer<typeof noteSchema>>                 = true }
+{ const _: TypesEqual<SpeakerVoice,         z.infer<typeof speakerVoiceSchema>>         = true }
+{ const _: TypesEqual<SpeakerVoiceComputed, z.infer<typeof speakerVoiceComputedSchema>> = true }
