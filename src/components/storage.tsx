@@ -3,7 +3,6 @@ import { defineStore, mapWritableState } from 'pinia'
 import { createStorage } from 'unstorage'
 import indexedDbDriver from 'unstorage/drivers/indexedb'
 import { now, uuid, downloadFile, readFile, alert } from '../utils'
-import type { TypesEqual } from '../utils'
 import { schemata } from '../engine'
 import appInfo from '../info'
 import { z } from 'zod'
@@ -231,7 +230,7 @@ export const projectHistoryDefault: ProjectHistory = {
 
 export const noteSchema = schemata.noteSchema.extend({
   id: z.string().uuid()
-})
+}) satisfies z.ZodType<Note>
 
 export const vocalTrackSchema = z.object({
   id:        z.string().uuid(),
@@ -242,7 +241,7 @@ export const vocalTrackSchema = z.object({
   volume:    z.number().min(0).max(1),
   muted:     z.boolean(),
   color:     z.string()
-})
+}) satisfies z.ZodType<VocalTrack>
 
 export const audioTrackSchema = z.object({
   id:         z.string().uuid(),
@@ -253,33 +252,35 @@ export const audioTrackSchema = z.object({
   color:      z.string(),
   waveImgUrl: z.string().nullable(),
   duration:   z.number().min(0)
-})
+}) satisfies z.ZodType<AudioTrack>
 
-export const trackSchema = vocalTrackSchema.or(audioTrackSchema)
+export const trackSchema = vocalTrackSchema.or(audioTrackSchema) satisfies z.ZodType<Track>
 
 export const projectSchema = z.object({
   id:     z.string().uuid(),
   bpm:    z.number().min(bpmMin),
   tracks: trackSchema.array()
-})
+}) satisfies z.ZodType<Project>
 
 export const projectInfoSchema = z.object({
   id:   z.string().uuid(),
   name: z.string(),
   date: z.number().int().positive()
-})
+}) satisfies z.ZodType<ProjectInfo>
 
 export const keyboardShortcutSchema = z.object({
   code:  z.string(),
   alt:   z.boolean(),
   shift: z.boolean(),
   desc:  z.string()
-})
+}) satisfies z.ZodType<KeyboardShortcut>
 
-export const keyboardShortcutsSchema = z.record(
-  z.enum(keyboardShortcutFunctions),
-  keyboardShortcutSchema
-).transform((x) => x as typeof x extends Partial<infer T> ? T: never)
+export const keyboardShortcutsSchema = z.object(
+  keyboardShortcutFunctions.reduce((obj, key) => {
+    obj[key] = keyboardShortcutSchema
+    return obj
+  }, {} as Record<typeof keyboardShortcutFunctions[number], typeof keyboardShortcutSchema>)
+) satisfies z.ZodType<KeyboardShortcuts>
 
 export const snapSchema = z.object({
   note: z.enum(snapNotes),
@@ -291,22 +292,11 @@ export const settingsSchema = z.object({
   keyboardShortcuts: keyboardShortcutsSchema,
   snap:              snapSchema,
   licenseAgreed:     z.boolean()
-})
+}) satisfies z.ZodType<Settings>
 
 export const settingsForExportSchema = z.object({
   keyboardShortcuts: keyboardShortcutsSchema
-})
-
-{ const _: TypesEqual<Note,              z.infer<typeof noteSchema>>              = true }
-{ const _: TypesEqual<VocalTrack,        z.infer<typeof vocalTrackSchema>>        = true }
-{ const _: TypesEqual<AudioTrack,        z.infer<typeof audioTrackSchema>>        = true }
-{ const _: TypesEqual<Track,             z.infer<typeof trackSchema>>             = true }
-{ const _: TypesEqual<Project,           z.infer<typeof projectSchema>>           = true }
-{ const _: TypesEqual<ProjectInfo,       z.infer<typeof projectInfoSchema>>       = true }
-{ const _: TypesEqual<KeyboardShortcut,  z.infer<typeof keyboardShortcutSchema>>  = true }
-{ const _: TypesEqual<KeyboardShortcuts, z.infer<typeof keyboardShortcutsSchema>> = true }
-{ const _: TypesEqual<Settings,          z.infer<typeof settingsSchema>>          = true }
-{ const _: TypesEqual<SettingsForExport, z.infer<typeof settingsForExportSchema>> = true }
+}) satisfies z.ZodType<SettingsForExport>
 
 export const useStore = defineStore('store', {
   state(): {

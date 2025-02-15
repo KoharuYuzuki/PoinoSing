@@ -1,7 +1,6 @@
 import { PoinoSingEngine, schemata, utils } from './engine'
 import { z } from 'zod'
 import { drawWave as _drawWave, drawSpec as _drawSpec } from './utils'
-import type { TypesEqual } from './utils'
 
 const engine = new PoinoSingEngine()
 let speakers: schemata.SpeakerVoices
@@ -54,17 +53,17 @@ const synthDataSchema = z.object({
   bpm:       schemata.bpmSchema,
   note:      schemata.noteSchema,
   speakerId: schemata.speakerIdEnumSchema
-})
+}) satisfies z.ZodType<SynthData>
 
 const waveDrawDataSchema = z.object({
   fs:        z.number().min(1),
   dataArray: z.instanceof(Float32Array).array()
-})
+}) satisfies z.ZodType<WaveDrawData>
 
 const specDrawDataSchema = z.object({
   fs:        z.number().min(1),
   dataArray: z.instanceof(Float32Array).array()
-})
+}) satisfies z.ZodType<SpecDrawData>
 
 const messageSchema = z.union([
   z.object({
@@ -92,12 +91,7 @@ const messageSchema = z.union([
     type: z.literal('spec:draw'),
     data: specDrawDataSchema
   })
-])
-
-{ const _: TypesEqual<SynthData,    z.infer<typeof synthDataSchema>>    = true }
-{ const _: TypesEqual<Message,      z.infer<typeof messageSchema>>      = true }
-{ const _: TypesEqual<WaveDrawData, z.infer<typeof waveDrawDataSchema>> = true }
-{ const _: TypesEqual<SpecDrawData, z.infer<typeof specDrawDataSchema>> = true }
+]) satisfies z.ZodType<Message>
 
 function checkBackend (id: string) {
   try {

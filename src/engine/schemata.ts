@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-export type TypesEqual<A, B> = A extends B ? B extends A ? true : false : false
-
 const checkEven = (value: number) => (value % 2) === 0
 const evenMsg   = (value: number) => ({ message: `${value} is not an even number` })
 
@@ -212,9 +210,9 @@ export type KanaEnum      = typeof kanas[number]
 export type EnvKeyEnum    = typeof envKeys[number]
 export type SpeakerIdEnum = typeof speakerIds[number]
 
-export const kanaEnumSchema      = z.enum(kanas)
-export const envKeyEnumSchema    = z.enum(envKeys)
-export const speakerIdEnumSchema = z.enum(speakerIds)
+export const kanaEnumSchema      = z.enum(kanas) satisfies z.ZodType<KanaEnum>
+export const envKeyEnumSchema    = z.enum(envKeys) satisfies z.ZodType<EnvKeyEnum>
+export const speakerIdEnumSchema = z.enum(speakerIds) satisfies z.ZodType<SpeakerIdEnum>
 
 export const pointXSchema = z.number().min(0).max(48000)
 export const pointYSchema = z.number().min(0).max(1)
@@ -265,7 +263,7 @@ export type SpeakerVoices = {
   [key in SpeakerIdEnum]: SpeakerVoiceComputed
 }
 
-export const bpmSchema = z.number().min(1)
+export const bpmSchema = z.number().min(1) satisfies z.ZodType<BPM>
 
 export const noteSchema = z.object({
   lyric:          z.enum([...kanas, ...envKeys]),
@@ -275,7 +273,7 @@ export const noteSchema = z.object({
   f0Seg:          z.number().min(0.1).max(10).array(),
   volumeSeg:      z.number().min(0).max(1).array(),
   phonemeTimings: z.number().array()
-})
+}) satisfies z.ZodType<Note>
 
 export const speakerVoiceSchema = z.object({
   id:        speakerIdEnumSchema,
@@ -286,7 +284,7 @@ export const speakerVoiceSchema = z.object({
   shiftNum:  z.number().int().min(0),
   envelopes: envRecordSchema,
   kanas:     kanaRecordSchema
-})
+}) satisfies z.ZodType<SpeakerVoice>
 
 export const speakerVoiceComputedSchema = z.object({
   id:       speakerIdEnumSchema,
@@ -296,12 +294,4 @@ export const speakerVoiceComputedSchema = z.object({
   shiftNum: z.number().int().min(0),
   waves:    waveRecordSchema,
   kanas:    kanaRecordSchema
-})
-
-{ const _: TypesEqual<KanaEnum,             z.infer<typeof kanaEnumSchema>>             = true }
-{ const _: TypesEqual<EnvKeyEnum,           z.infer<typeof envKeyEnumSchema>>           = true }
-{ const _: TypesEqual<SpeakerIdEnum,        z.infer<typeof speakerIdEnumSchema>>        = true }
-{ const _: TypesEqual<BPM,                  z.infer<typeof bpmSchema>>                  = true }
-{ const _: TypesEqual<Note,                 z.infer<typeof noteSchema>>                 = true }
-{ const _: TypesEqual<SpeakerVoice,         z.infer<typeof speakerVoiceSchema>>         = true }
-{ const _: TypesEqual<SpeakerVoiceComputed, z.infer<typeof speakerVoiceComputedSchema>> = true }
+}) satisfies z.ZodType<SpeakerVoiceComputed>

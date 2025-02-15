@@ -1,8 +1,6 @@
 import { utils } from './engine'
 import type { Note } from './components/storage'
 
-export type TypesEqual<A, B> = A extends B ? B extends A ? true : false : false
-
 export const isFirefox = () => CSS.supports('-moz-transform', 'none')
 
 export const uuid = () => crypto.randomUUID()
