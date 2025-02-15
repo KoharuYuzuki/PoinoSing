@@ -8,7 +8,7 @@ export default defineComponent({
     ...mapState(useStore, ['settings'])
   },
   emits: {
-    shortcut(func: KeyboardShortcutFunctions) {
+    shortcut: (func: KeyboardShortcutFunctions) => {
       return true
     }
   },

@@ -8,31 +8,31 @@ export default defineComponent({
     ...mapWritableState(useStore, ['page'])
   },
   emits: {
-    newProject() {
+    newProject: () => {
       return true
     },
-    importProject() {
+    importProject: () => {
       return true
     },
-    openSettings() {
+    openSettings: () => {
       return true
     },
-    openFile() {
+    openFile: () => {
       return true
     },
-    saveTrack() {
+    saveTrack: () => {
       return true
     },
-    saveTrackAll() {
+    saveTrackAll: () => {
       return true
     },
-    undo() {
+    undo: () => {
       return true
     },
-    redo() {
+    redo: () => {
       return true
     },
-    openHelp() {
+    openHelp: () => {
       return true
     },
   },

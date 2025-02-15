@@ -1439,19 +1439,19 @@ const component = defineComponent({
     this.startEngine()
   },
   emits: {
-    updateProgressTotal(total: number) {
+    updateProgressTotal: (total: number) => {
       return true
     },
-    updateProgressCurrentRelative(relative: number) {
+    updateProgressCurrentRelative: (relative: number) => {
       return true
     },
-    updatePlaybackHead() {
+    updatePlaybackHead: () => {
       return true
     },
-    updateF0(trackId: string, noteIds: string[]) {
+    updateF0: (trackId: string, noteIds: string[]) => {
       return true
     },
-    updateVolume(trackId: string, noteIds: string[]) {
+    updateVolume: (trackId: string, noteIds: string[]) => {
       return true
     }
   },

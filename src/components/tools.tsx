@@ -22,13 +22,13 @@ export default defineComponent({
     )
   },
   emits: {
-    newVocalTrack() {
+    newVocalTrack: () => {
       return true
     },
-    playOrPause() {
+    playOrPause: () => {
       return true
     },
-    newBpm(bpm: number) {
+    newBpm: (bpm: number) => {
       return true
     }
   },

@@ -87,7 +87,7 @@ const component = defineComponent({
     )
   },
   emits: {
-    playOrPause() {
+    playOrPause: () => {
       return true
     }
   },

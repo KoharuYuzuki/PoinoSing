@@ -985,10 +985,10 @@ const component = defineComponent({
     }
   },
   emits: {
-    notesChanged(trackId: string, noteIds: string[]) {
+    notesChanged: (trackId: string, noteIds: string[]) => {
       return true
     },
-    allNotesChanged(trackId: string) {
+    allNotesChanged: (trackId: string) => {
       return true
     }
   },
