@@ -422,7 +422,7 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
     id:       voice.id,
     name:     voice.name,
     fs:       voice.fs,
-    segLen:   voice.segLen,
+    segLen:   segLen + (shiftLen * shiftNum),
     waves:    waves,
     kanas:    voice.kanas
   }
