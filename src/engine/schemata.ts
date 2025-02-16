@@ -256,8 +256,6 @@ export interface SpeakerVoiceComputed {
   name:     string
   fs:       48000
   segLen:   number
-  shiftLen: number
-  shiftNum: number
   waves:    z.infer<typeof waveRecordSchema>
   kanas:    z.infer<typeof kanaRecordSchema>
 }
@@ -304,8 +302,6 @@ export const speakerVoiceComputedSchema = z.object({
   name:     z.string(),
   fs:       z.literal(48000),
   segLen:   z.number().int().min(120).refine(checkEven, evenMsg),
-  shiftLen: z.number().int().min(1),
-  shiftNum: z.number().int().min(0),
   waves:    waveRecordSchema,
   kanas:    kanaRecordSchema
 }) satisfies z.ZodType<SpeakerVoiceComputed>
