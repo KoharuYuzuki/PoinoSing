@@ -206,6 +206,8 @@ export const speakerIds = [
   'layney'
 ] as const
 
+export const phonemeMixPattern = new RegExp(`(?<phoneme>${envKeys.join('|')}):(?<value>\\d+\\.*\\d*)`)
+
 export type KanaEnum      = typeof kanas[number]
 export type EnvKeyEnum    = typeof envKeys[number]
 export type SpeakerIdEnum = typeof speakerIds[number]
@@ -229,7 +231,7 @@ export const kanaRecordSchema = z.record(kanaEnumSchema, z.array(envLenSchema))
 export type BPM = number
 
 export interface Note {
-  lyric: KanaEnum | EnvKeyEnum
+  lyric: KanaEnum | EnvKeyEnum | string
   pitch: number
   begin: number
   end: number
@@ -253,6 +255,7 @@ export interface SpeakerVoiceComputed {
   id:       SpeakerIdEnum
   name:     string
   fs:       48000
+  segLen:   number
   shiftLen: number
   shiftNum: number
   waves:    z.infer<typeof waveRecordSchema>
@@ -265,8 +268,18 @@ export type SpeakerVoices = {
 
 export const bpmSchema = z.number().min(1) satisfies z.ZodType<BPM>
 
+export const phonemeMixSchema = z.string().refine((x: string) => {
+  const split = x.replaceAll(' ', '').split(',')
+
+  for (let i = 0; i < split.length; i++) {
+    if (!phonemeMixPattern.test(split[i])) return false
+  }
+
+  return true
+})
+
 export const noteSchema = z.object({
-  lyric:          z.enum([...kanas, ...envKeys]),
+  lyric:          z.enum([...kanas, ...envKeys]).or(phonemeMixSchema),
   pitch:          z.number().int().min(0).max(127),
   begin:          z.number().int().min(0),
   end:            z.number().int().min(0),
@@ -290,6 +303,7 @@ export const speakerVoiceComputedSchema = z.object({
   id:       speakerIdEnumSchema,
   name:     z.string(),
   fs:       z.literal(48000),
+  segLen:   z.number().int().min(120).refine(checkEven, evenMsg),
   shiftLen: z.number().int().min(1),
   shiftNum: z.number().int().min(0),
   waves:    waveRecordSchema,

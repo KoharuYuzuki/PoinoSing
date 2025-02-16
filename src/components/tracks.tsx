@@ -737,7 +737,7 @@ const component = defineComponent({
       const track = this.getTrack(trackId)
       if (track?.type !== 'vocal') return
 
-      track.notes = track.notes.filter((note) => note.id !== noteId)
+      track.notes = track.notes.filter((note) => note.id !== noteId).map((x) => toRaw(x))
       this.updateNote(trackId, noteId)
     },
     sortNotes(notes: Note[]) {
@@ -814,7 +814,11 @@ const component = defineComponent({
       } else if (schemata.envKeys.includes(lyric as schemata.EnvKeyEnum)) {
         note.lyric = lyric as schemata.EnvKeyEnum
       } else {
-        note.lyric = '、'
+        if (schemata.phonemeMixSchema.safeParse(lyric).success) {
+          note.lyric = lyric
+        } else {
+          note.lyric = '、'
+        }
       }
 
       const speakerId = track.speakerId
@@ -837,7 +841,7 @@ const component = defineComponent({
           return envLengths.map(({envKey}) => envKey)
         }
       } else {
-        return [lyric as schemata.EnvKeyEnum]
+        return [lyric as schemata.EnvKeyEnum | string]
       }
     },
     updatePhonemeTimings(note: Note, speaker: schemata.SpeakerVoice) {

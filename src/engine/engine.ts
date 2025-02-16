@@ -2,7 +2,8 @@ import * as tf from '@tensorflow/tfjs'
 import '@tensorflow/tfjs-backend-webgpu'
 import { WebGPUBackend } from '@tensorflow/tfjs-backend-webgpu/dist/backend_webgpu'
 import {
-  kanas, envKeyVolumes, bpmSchema, noteSchema, speakerVoiceComputedSchema
+  kanas, envKeys, phonemeMixPattern, envKeyVolumes,
+  bpmSchema, noteSchema, speakerVoiceComputedSchema,
 } from './schemata'
 import type {
   KanaEnum, EnvKeyEnum, Note, SpeakerVoiceComputed
@@ -56,7 +57,7 @@ export class PoinoSingEngine {
     const lyric = note.lyric
     const phonemeTimingsLen = note.phonemeTimings.length
 
-    const phonemes: EnvKeyEnum[] = []
+    const phonemes: (EnvKeyEnum | string)[] = []
     const phonemeTimings: number[] = []
 
     if ((kanas as unknown as string[]).includes(lyric)) {
@@ -80,7 +81,7 @@ export class PoinoSingEngine {
         )
       }
 
-      phonemes.push(lyric as EnvKeyEnum)
+      phonemes.push(lyric as EnvKeyEnum | string)
       phonemeTimings.push(note.phonemeTimings[0])
     }
 
@@ -148,10 +149,11 @@ export class PoinoSingEngine {
     f0Seg: number[],
     volSeg: number[],
     timingPercent: number[],
-    phonemes: EnvKeyEnum[],
+    phonemes: (EnvKeyEnum | string)[],
     voice: SpeakerVoiceComputed
   ) {
     const fs      = voice.fs
+    const segLen  = voice.segLen
     const waveLen = int(fs * duration)
     const freq    = pitch2freq(pitch)
 
@@ -165,16 +167,50 @@ export class PoinoSingEngine {
       const indexApproximate = timingPercent.findLastIndex((_percent) => _percent <= percent)
       if (indexApproximate === -1) break
 
-      const envKey = phonemes[indexApproximate]
+      const phoneme = phonemes[indexApproximate]
 
-      const waves = voice.waves[envKey]
-      if (!waves) break
+      let segment: number[]
+      let phonemeVolume: number
 
-      const waveIndex = Math.floor(Math.random() * waves.length)
-      const segment = waves[waveIndex]
+      if (envKeys.includes(phoneme as EnvKeyEnum)) {
+        const waves = voice.waves[phoneme as EnvKeyEnum]
+        if (!waves) break
+
+        const waveIndex = Math.floor(Math.random() * waves.length)
+        segment = waves[waveIndex]
+
+        phonemeVolume = envKeyVolumes[phoneme as EnvKeyEnum]
+      } else {
+        const split = phoneme.replaceAll(' ', '').split(',')
+        const segmentSummed = [...new Array(segLen)].fill(0)
+        let phonemeVolumeSummed = 0
+
+        for (let i = 0; i < split.length; i++) {
+          const result = phonemeMixPattern.exec(split[i])
+          if (!result || !result.groups) continue
+
+          const envKey = result.groups.phoneme as EnvKeyEnum
+          const value = Number(result.groups.value)
+
+          const waves = voice.waves[envKey]
+          if (!waves) continue
+
+          const waveIndex = Math.floor(Math.random() * waves.length)
+          const segment = waves[waveIndex].map((x) => x * value)
+
+          for (let j = 0; j < segLen; j++) {
+            segmentSummed[j] += segment[j]
+          }
+
+          phonemeVolumeSummed += envKeyVolumes[envKey] * value
+        }
+
+        segment = segmentSummed
+        phonemeVolume = phonemeVolumeSummed
+      }
 
       const volume = (
-        envKeyVolumes[envKey] *
+        phonemeVolume *
         (0.5 + (Math.sin(Math.PI * (Math.log10(percent * 9 + 1) / Math.log10(10))) * 0.5))
       )
 

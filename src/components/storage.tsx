@@ -8,7 +8,7 @@ import appInfo from '../info'
 import { z } from 'zod'
 import { basename, extname } from 'pathe'
 
-export type Lyric = schemata.KanaEnum | schemata.EnvKeyEnum
+export type Lyric = schemata.KanaEnum | schemata.EnvKeyEnum | string
 
 export interface Note extends schemata.Note {
   id: string
