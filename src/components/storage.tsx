@@ -94,6 +94,7 @@ export interface Settings {
   projectsInfo:      ProjectInfo[]
   keyboardShortcuts: KeyboardShortcuts
   snap:              Snap
+  smooth:            number
   licenseAgreed:     boolean
 }
 
@@ -216,10 +217,15 @@ export const snap64: Snap = {
   tick: Math.round(quarterNoteTick / 16)
 } as const
 
+export const smoothMin = 64
+export const smoothMax = 512
+export const smoothDefault = 128
+
 export const settingsDefault: Settings = {
   projectsInfo:      [],
   keyboardShortcuts: keyboardShortcutsDefault,
   snap:              snap16,
+  smooth:            smoothDefault,
   licenseAgreed:     false
 } as const
 
@@ -287,10 +293,13 @@ export const snapSchema = z.object({
   tick: z.number().int().min(1)
 })
 
+export const smoothSchema = z.number().min(smoothMin).max(smoothMax).int()
+
 export const settingsSchema = z.object({
   projectsInfo:      projectInfoSchema.array(),
   keyboardShortcuts: keyboardShortcutsSchema,
   snap:              snapSchema,
+  smooth:            smoothSchema,
   licenseAgreed:     z.boolean()
 }) satisfies z.ZodType<Settings>
 
@@ -322,7 +331,7 @@ export const useStore = defineStore('store', {
         hidden: boolean
       }[]
     }
-    toolMode: 'selector' | 'pen' | 'vibrato' | 'fade-in' | 'fade-out'
+    toolMode: 'selector' | 'pen' | 'vibrato' | 'fade-in' | 'fade-out' | 'smooth'
     engineIsReady: boolean
   } {
     return {

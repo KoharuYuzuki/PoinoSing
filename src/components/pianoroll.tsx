@@ -100,6 +100,17 @@ const component = defineComponent({
       } | null
       noteIds: string[]
     }
+    smooth: {
+      begin: {
+        x: number
+        y: number
+      } | null
+      end: {
+        x: number
+        y: number
+      } | null
+      noteIds: string[]
+    }
     typedLyrics: {
       [key: string]: string
     }
@@ -110,6 +121,9 @@ const component = defineComponent({
       [key: string]: number[]
     }
     drewFades: {
+      [key: string]: number[]
+    }
+    drewSmooths: {
       [key: string]: number[]
     }
     volumeDrawing: {
@@ -172,10 +186,16 @@ const component = defineComponent({
         end: null,
         noteIds: []
       },
+      smooth: {
+        begin: null,
+        end: null,
+        noteIds: []
+      },
       typedLyrics: {},
       drewF0Segs: {},
       drewVibratos: {},
       drewFades: {},
+      drewSmooths: {},
       volumeDrawing: {
         points: [],
         noteIds: []
@@ -973,6 +993,186 @@ const component = defineComponent({
       this.fade.end = null
       this.fade.noteIds = []
     },
+    makeSmooth(
+      currentTarget: HTMLElement, target: HTMLElement,
+      offsetX: number, offsetY: number,
+      button: 'left' | 'right'
+    ) {
+      const currentTargetRect = currentTarget.getBoundingClientRect()
+
+      let x: number
+      let y: number
+
+      if (target === currentTarget) {
+        x = offsetX
+        y = offsetY
+      } else {
+        const targetRect = target.getBoundingClientRect()
+        const top = targetRect.top - currentTargetRect.top
+        const left = targetRect.left - currentTargetRect.left
+
+        x = left + offsetX
+        y = top + offsetY
+      }
+
+      if (!this.smooth.begin) {
+        this.smooth.begin = { x, y }
+      }
+
+      this.smooth.end = { x, y }
+
+      const x1 = this.smooth.begin.x
+      const y1 = this.smooth.begin.y
+
+      const x2 = this.smooth.end.x
+      const y2 = this.smooth.end.y
+
+      const rect = this.computeRect(x1, y1, x2, y2)
+
+      const numSamples = utils.int(this.px2tick(rect.width))
+      const f0Seq = new Array(numSamples).fill(0)
+
+      this.smooth.noteIds.forEach((noteId) => {
+        const trackId = this.tracksInfo.selectedTrackId
+        if (trackId === null) return
+
+        const noteElement = document.querySelector<HTMLElement>(`.sequencer-note[noteid="${noteId}"]`)
+        if (noteElement === null) return
+
+        const svgElement = noteElement.querySelector<SVGSVGElement>('.f0')
+        if (svgElement === null) return
+
+        const svgRect = svgElement.getBoundingClientRect()
+
+        const left = svgRect.left - currentTargetRect.left
+        const right = left + svgRect.width
+
+        const track = this.tracks?.getTrack(trackId)
+        if (track?.type !== 'vocal') return
+
+        const note = track.notes.find((note) => note.id === noteId)
+        if (note === undefined) return
+
+        const begin = utils.int(this.px2tick(Math.max(left - rect.x, 0)))
+        const num = utils.int(this.px2tick((right - left) + Math.min(left - rect.x, 0))) + 1
+
+        const offset = utils.int(this.px2tick(Math.max(rect.x - left, 0)))
+        const freq = utils.pitch2freq(note.pitch)
+
+        const clone = structuredClone(toRaw(note.f0Seg))
+
+        for (let i = 0; i < num; i++) {
+          const seqIndex = begin + i
+          if (seqIndex >= numSamples) break
+
+          const segIndex = offset + i
+          if (segIndex >= clone.length) break
+
+          f0Seq[seqIndex] = freq * clone[offset + i]
+        }
+      })
+
+      const kernelSize = this.settings.smooth
+      const padSize = Math.floor(kernelSize / 2)
+      const hanning = utils.hanningWindow(kernelSize)
+      const coef = 1 / utils.sum(hanning)
+      const kernel = hanning.map((x) => x * coef)
+
+      const f0SeqPadded = [
+        ...new Array(padSize).fill(f0Seq.at(0)),
+        ...f0Seq,
+        ...new Array(padSize).fill(f0Seq.at(-1)),
+      ]
+
+      const f0SeqSmoothed = new Array(f0Seq.length).fill(0)
+
+      for (let i = 0; i < f0Seq.length; i++) {
+        for (let j = 0; j < kernelSize; j++) {
+          const f0 = f0SeqPadded[i + j]
+          if (f0 <= 0) continue
+          f0SeqSmoothed[i] += f0 * kernel[j]
+        }
+      }
+
+      this.smooth.noteIds.forEach((noteId) => {
+        const trackId = this.tracksInfo.selectedTrackId
+        if (trackId === null) return
+
+        const noteElement = document.querySelector<HTMLElement>(`.sequencer-note[noteid="${noteId}"]`)
+        if (noteElement === null) return
+
+        const svgElement = noteElement.querySelector<SVGSVGElement>('.f0')
+        if (svgElement === null) return
+
+        const svgRect = svgElement.getBoundingClientRect()
+
+        const left = svgRect.left - currentTargetRect.left
+        const right = left + svgRect.width
+
+        const track = this.tracks?.getTrack(trackId)
+        if (track?.type !== 'vocal') return
+
+        const note = track.notes.find((note) => note.id === noteId)
+        if (note === undefined) return
+
+        const begin = utils.int(this.px2tick(Math.max(left - rect.x, 0)))
+        const num = utils.int(this.px2tick((right - left) + Math.min(left - rect.x, 0))) + 1
+
+        const sliced = f0SeqSmoothed.slice(begin, begin + num)
+        const offset = utils.int(this.px2tick(Math.max(rect.x - left, 0)))
+
+        const freq = utils.pitch2freq(note.pitch)
+
+        this.drewSmooths[note.id] = structuredClone(toRaw(note.f0Seg))
+
+        for (let i = 0; i < sliced.length; i++) {
+          const index = offset + i
+          if (index >= this.drewSmooths[note.id].length) break
+
+          if (button === 'right') {
+            this.drewSmooths[note.id][index] = f0Default
+            continue
+          }
+
+          let value = sliced[i] / freq
+          value = Math.min(value, f0Max)
+          value = Math.max(value, f0Min)
+          this.drewSmooths[note.id][index] = value
+        }
+
+        const polylineElement = svgElement.querySelector<SVGPolylineElement>('polyline')
+        if (polylineElement === null) return
+
+        this.drawF0(
+          svgElement,
+          polylineElement,
+          note.pitch,
+          this.drewSmooths[note.id]
+        )
+      })
+    },
+    applySmooth() {
+      const track = this.tracks?.getTrack(this.tracksInfo.selectedTrackId)
+
+      if (track?.type === 'vocal') {
+        this.smooth.noteIds.forEach((noteId) => {
+          const note = track.notes.find((note) => note.id === noteId)
+          if (note && (note.id in this.drewSmooths)) {
+            note.f0Seg = structuredClone(toRaw(this.drewSmooths[note.id]))
+            delete this.drewSmooths[note.id]
+          }
+          this.tracks?.updateNote(track.id, noteId, false)
+        })
+
+        if (this.smooth.noteIds.length > 0) {
+          this.tracks?.synthVocalTrack(track.id)
+        }
+      }
+
+      this.smooth.begin = null
+      this.smooth.end = null
+      this.smooth.noteIds = []
+    },
     computeRect(x1: number, y1: number, x2: number, y2: number) {
       let x = 0
       let y = 0
@@ -1585,7 +1785,8 @@ const component = defineComponent({
         (this.toolMode === 'pen') ||
         (this.toolMode === 'vibrato') ||
         (this.toolMode === 'fade-in') ||
-        (this.toolMode === 'fade-out')
+        (this.toolMode === 'fade-out') ||
+        (this.toolMode === 'smooth')
       )
     },
     checkNoteInView(note: Note) {
@@ -1850,6 +2051,10 @@ const component = defineComponent({
               if ((this.toolMode === 'fade-in') || (this.toolMode === 'fade-out')) {
                 this.applyFade()
               }
+
+              if (this.toolMode === 'smooth') {
+                this.applySmooth()
+              }
             }}
             onMouseleave={(event) => {
               if ((event.buttons !== 1) && (event.buttons !== 2)) return
@@ -1865,6 +2070,10 @@ const component = defineComponent({
 
               if ((this.toolMode === 'fade-in') || (this.toolMode === 'fade-out')) {
                 this.applyFade()
+              }
+
+              if (this.toolMode === 'smooth') {
+                this.applySmooth()
               }
             }}
             onPointermove={(event) => {
@@ -1929,6 +2138,16 @@ const component = defineComponent({
                   event.offsetY,
                   button,
                   'out'
+                )
+              }
+
+              if (this.toolMode === 'smooth') {
+                this.makeSmooth(
+                  currentTarget,
+                  target,
+                  event.offsetX,
+                  event.offsetY,
+                  button
                 )
               }
             }}
@@ -2350,6 +2569,12 @@ const component = defineComponent({
                             if (this.fade.begin) {
                               if (!this.fade.noteIds.includes(note.id)) {
                                 this.fade.noteIds.push(note.id)
+                              }
+                            }
+
+                            if (this.smooth.begin) {
+                              if (!this.smooth.noteIds.includes(note.id)) {
+                                this.smooth.noteIds.push(note.id)
                               }
                             }
                           }}

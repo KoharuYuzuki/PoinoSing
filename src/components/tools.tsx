@@ -1,6 +1,9 @@
 import { defineComponent } from 'vue'
 import { mapWritableState } from 'pinia'
-import { useStore, snap4, snap8, snap16, snap32, snap64 } from './storage'
+import {
+  useStore, snap4, snap8, snap16, snap32, snap64,
+  smoothMin, smoothMax
+} from './storage'
 
 export default defineComponent({
   methods: {
@@ -120,6 +123,37 @@ export default defineComponent({
               ${(this.toolMode === 'fade-out') ? 'bg-accent' : 'bg-main'}
             `}></div>
           </button>
+          <button
+            title="スムースツール"
+            onClick={() => this.toolMode = 'smooth'}
+          >
+            <div class={`
+              w-6 h-6 [mask-image:url('./assets/smooth.svg')]
+              ${(this.toolMode === 'smooth') ? 'bg-accent' : 'bg-main'}
+            `}></div>
+          </button>
+          {
+            (this.toolMode === 'smooth') ?
+            <input
+              class="w-24"
+              type="range"
+              min={ smoothMin }
+              max={ smoothMax }
+              step="1"
+              value={ this.settings.smooth }
+              onChange={(event) => {
+                if (event.target === null) return
+
+                const target = event.target as HTMLSelectElement
+                const value = Math.round(Number(target.value))
+
+                if (Number.isFinite(value)) {
+                  this.settings.smooth = value
+                }
+              }}
+            ></input> :
+            null
+          }
         </div>
         <div class="mr-4 flex items-center gap-4">
           <div class="flex gap-1">
