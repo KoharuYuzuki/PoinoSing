@@ -1,8 +1,6 @@
-import * as tf from '@tensorflow/tfjs'
 import { z } from 'zod'
 import type { SpeakerVoice, SpeakerVoiceComputed, EnvKeyEnum } from './schemata'
-
-export const canUseWebGPU = ('gpu' in navigator)
+import { Complex, irfft } from './fft'
 
 export function checkPositiveInt (value: any) {
   z.number().int().positive().parse(value)
@@ -17,76 +15,56 @@ export function int (value: number) {
 }
 
 export function seq2seg (
-  sequence: tf.Tensor,
+  sequence: number[],
   segLen: number,
   hopLen: number
 ) {
   checkPositiveInt(segLen)
   checkPositiveInt(hopLen)
 
-  const sequenceLen = sequence.shape[0]
+  const sequenceLen = sequence.length
   const segmentsLen = computeSeq2segLen(sequenceLen, segLen, hopLen)
-  const segments: tf.Tensor[] = []
+  const segments: number[][] = []
 
   for (let i = 0; i < segmentsLen; i++) {
     const begin = hopLen * i
     const end = begin + segLen
 
-    let segment = sequence.slice(
-      (begin >= 0) ? begin : 0,
-      (end <= sequenceLen) ? segLen: sequenceLen - begin
-    )
-    const segmentLen = segment.shape[0]
+    let sliced = sequence.slice(begin, end)
+    const slicedLen = sliced.length
 
-    if (segmentLen < segLen) {
-      const padding = tf.zeros([segLen - segmentLen, ...sequence.shape.slice(1)])
-      segment = segment.concat(padding)
-      padding.dispose()
+    if (slicedLen < segLen) {
+      sliced = [
+        ...sliced,
+        ...[...new Array(segLen - slicedLen)].fill(0)
+      ]
     }
 
-    segments.push(segment)
+    segments.push(sliced)
   }
 
-  const concatenated = tf.tidy(() => {
-    const concatenated = tf.concat(segments).reshape([segmentsLen, segLen])
-    tf.dispose(segments)
-    return concatenated
-  })
-
-  return concatenated
+  return segments
 }
 
 export function seg2seq (
-  segments: tf.Tensor,
+  segments: number[][],
   segLen: number,
   hopLen: number
 ) {
   checkPositiveInt(segLen)
   checkPositiveInt(hopLen)
 
-  const segmentsLen = segments.shape[0]
+  const segmentsLen = segments.length
   const sequenceLen = computeSeg2seqLen(segmentsLen, segLen, hopLen)
-  let sequence = tf.zeros([sequenceLen, ...segments.shape.slice(2)])
+  const sequence = new Array<number>(sequenceLen)
 
   for (let i = 0; i < segmentsLen; i++) {
+    const segment = segments[i]
     const begin = hopLen * i
-    const end = begin + segLen
 
-    const segment = segments.slice(i, 1).reshape([-1, ...segments.shape.slice(2)])
-    const paddingBefore = tf.zeros([begin, ...segment.shape.slice(1)])
-    const paddingAfter = tf.zeros([sequenceLen - end, ...segment.shape.slice(1)])
-
-    sequence = tf.tidy(() => {
-      const merged = tf.add(
-        sequence,
-        tf.concat([paddingBefore, segment, paddingAfter])
-      )
-      sequence.dispose()
-      segment.dispose()
-      paddingBefore.dispose()
-      paddingAfter.dispose()
-      return merged
-    })
+    for (let j = 0; j < segment.length; j++) {
+      sequence[begin + j] = segment[j]
+    }
   }
 
   return sequence
@@ -326,7 +304,7 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
 
       env.forEach((point) => {
         x.push(point[0])
-        y.push(Math.pow(10, point[1]) - 1)
+        y.push(point[1])
       })
 
       const interpolated = interp(x, y, z)
@@ -359,13 +337,15 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
     return new Array(rfftLen).fill(apMag)
   })()
 
-  const numWaves = 8
+  const numSegments = 8
   const window = hanningWindow(segLen)
 
   const waves = Object.fromEntries(
     Object.keys(specs).map((key) => {
       const envKey = key as EnvKeyEnum
       const spec = specs[envKey]
+
+      const specComp = spec.map((x) => new Complex(0, Math.pow(10, x) - 1))
 
       const specLowAvg = avg(spec.slice(0, specSplitFrerqIndex))
       const specHighAvg = avg(spec.slice(specSplitFrerqIndex))
@@ -378,24 +358,17 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
       const rightBegin = 0
       const rightEnd = segLen / 2
 
-      const waves: number[][] = []
+      const segments: number[][] = []
 
-      for (let i = 0; i < numWaves; i++) {
+      for (let i = 0; i < numSegments; i++) {
         const phase = [...new Array(rfftLen)].map((_, i) => Math.random() * (2 * Math.PI) * ap[i])
+        const phaseComp = phase.map((x) => new Complex(Math.cos(x), Math.sin(x)))
 
-        const ifft = tf.reshape(
-          tf.spectral.irfft(
-            tf.mul(
-              tf.complex(tf.zerosLike(spec), spec),
-              tf.complex(tf.cos(phase), tf.sin(phase))
-            )
-          ),
-          [segLen]
-        ).dataSync<'float32'>()
+        const segment = irfft(specComp.map((x, i) => x.multiply(phaseComp[i])))
 
         const edited = [
-          ...ifft.slice(leftBegin, leftEnd),
-          ...ifft.slice(rightBegin, rightEnd),
+          ...segment.slice(leftBegin, leftEnd),
+          ...segment.slice(rightBegin, rightEnd),
         ].map((x, i) => x * window[i])
 
         const reverbed: number[] = new Array(segLen + (shiftLen * shiftNum)).fill(0)
@@ -408,12 +381,12 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
           }
         }
 
-        waves.push(reverbed)
+        segments.push(reverbed)
       }
 
       return [
         envKey,
-        waves
+        segments
       ]
     })
   )

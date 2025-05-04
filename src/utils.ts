@@ -1,4 +1,4 @@
-import { utils } from './engine'
+import { fft, utils } from './engine'
 import type { Note } from './components/storage'
 
 export const isFirefox = () => CSS.supports('-moz-transform', 'none')
@@ -161,7 +161,7 @@ export function drawSpec (fs: number, dataArray: Float32Array[]) {
     }
 
     const length = dataArray[0].length
-    const merged = new Float32Array(length)
+    const merged = new Array<number>(length).fill(0)
 
     for (let i = 0; i < dataArray.length; i++) {
       const data = dataArray[i]
@@ -171,69 +171,52 @@ export function drawSpec (fs: number, dataArray: Float32Array[]) {
       }
     }
 
-    import('@tensorflow/tfjs')
-    .then((tf) => {
-      const segLen = utils.int(fs * 0.1)
-      const hopLen = utils.int(fs * 0.025)
+    const segLen = utils.int(fs * 0.1)
+    const hopLen = utils.int(fs * 0.025)
 
-      const waveSeq = tf.tensor(merged)
-      const waveSegs = utils.seq2seg(waveSeq, segLen, hopLen)
+    const waveSegs = utils.seq2seg(merged, segLen, hopLen)
+    const hanningWindow = utils.hanningWindow(segLen)
 
-      const waveSegsWindowed = tf.tidy(() => {
-        const window = tf.signal.hammingWindow(segLen)
-        const windowed = tf.mul(waveSegs, window)
-
-        window.dispose()
-        waveSeq.dispose()
-        waveSegs.dispose()
-
-        return windowed
-      })
-
-      const specSegs = tf.tidy(() => {
-        const specs = tf.abs(tf.spectral.rfft(waveSegsWindowed))
-
-        waveSegsWindowed.dispose()
-
-        return specs
-      })
-
-      const numKey = 12 * 11
-      const height = numKey * 6
-      const step = numKey / height
-
-      const freqsLog = [...new Array(height)].map((_, i) => utils.pitch2freq(step * i))
-      const freqsLinear = utils.rfftfreq(segLen, 1.0 / fs)
-
-      const width = specSegs.shape[0]
-      const data = specSegs.arraySync() as number[][]
-
-      specSegs.dispose()
-
-      const interpolated = data.map((spec) => utils.interp(freqsLinear, spec, freqsLog))
-
-      const canvas = new OffscreenCanvas(width, height)
-      const ctx = canvas.getContext('2d')
-      const maxValue = 300
-
-      if (ctx === null) {
-        throw new Error('ctx is null')
-      }
-
-      for (let i = 0; i < width; i++) {
-        for (let j = 0; j < height; j++) {
-          const value = interpolated[i][j]
-          ctx.fillStyle = `rgba(0, 0, 0, ${value / maxValue})`
-
-          const x = i
-          const y = height - (j + 1)
-
-          ctx.fillRect(x, y, 1, 1)
-        }
-      }
-
-      return canvas.convertToBlob()
+    const waveSegsWindowed = waveSegs.map((x) => {
+      return x.map((y, i) => y * hanningWindow[i])
     })
+
+    const specs = waveSegsWindowed.map((x) => {
+      return fft.rfft(x).map((y) => y.magnitude())
+    })
+
+    const numKey = 12 * 11
+    const height = numKey * 6
+    const step = numKey / height
+
+    const freqsLog = [...new Array(height)].map((_, i) => utils.pitch2freq(step * i))
+    const freqsLinear = utils.rfftfreq(segLen, 1.0 / fs)
+
+    const width = specs.length
+
+    const interpolated = specs.map((spec) => utils.interp(freqsLinear, spec, freqsLog))
+
+    const canvas = new OffscreenCanvas(width, height)
+    const ctx = canvas.getContext('2d')
+    const maxValue = 300
+
+    if (ctx === null) {
+      throw new Error('ctx is null')
+    }
+
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < height; j++) {
+        const value = interpolated[i][j]
+        ctx.fillStyle = `rgba(0, 0, 0, ${value / maxValue})`
+
+        const x = i
+        const y = height - (j + 1)
+
+        ctx.fillRect(x, y, 1, 1)
+      }
+    }
+
+    canvas.convertToBlob()
     .then((blob) => {
       const url = URL.createObjectURL(blob)
       resolve(url)

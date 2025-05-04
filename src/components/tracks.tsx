@@ -1,7 +1,7 @@
 import { defineComponent, toRaw } from 'vue'
 import type { PropType } from 'vue'
 import { mapWritableState } from 'pinia'
-import { PoinoSingEngine, schemata, utils } from '../engine'
+import { getSpeakers, schemata, utils } from '../engine'
 import { uuid, downloadFile, readFile, alert, openFileDialog, kata2hira, note2hash } from '../utils'
 import { parseUST } from '../ust'
 import type { WorkerResult, Message, SynthData } from '../worker'
@@ -15,7 +15,7 @@ export type NoteCacheData = {
   offset: number
 }
 
-const speakers = PoinoSingEngine.getSpeakers()
+const speakers = getSpeakers()
 const noteCaches: { [key: string]: NoteCacheData } = {}
 const players: { [key: string]: HTMLAudioElement } = {}
 
@@ -60,32 +60,6 @@ const component = defineComponent({
   methods: {
     postMessageToWorker(message: Message) {
       this.worker.postMessage(message)
-    },
-    checkBackend() {
-      return new Promise<boolean>((resolve, reject) => {
-        const id = uuid()
-
-        window.addEventListener(id, (event) => {
-          const result = (event as CustomEvent).detail as WorkerResult
-
-          if (result.type === 'success') {
-            resolve(result.data)
-          } else {
-            alert([
-              '合成エンジンのバックエンドのチェックに失敗しました',
-              'ページを再読み込みしてください',
-              String(result.data)
-            ])
-            reject(result.data)
-          }
-        }, { once: true })
-
-        this.postMessageToWorker({
-          id:   id,
-          type: 'engine:backend:check',
-          data: null
-        })
-      })
     },
     initEngine() {
       return new Promise<void>((resolve, reject) => {
@@ -1376,18 +1350,7 @@ const component = defineComponent({
       })
     },
     startEngine() {
-      this.checkBackend()
-      .then((result) => {
-        if (result) {
-          return this.initEngine()
-        } else {
-          alert([
-            '対応しない動作環境です',
-            'ご利用の環境ではウェブワーカー上でWebGPUが利用できません'
-          ])
-          return Promise.reject()
-        }
-      })
+      this.initEngine()
       .then(() => this.engineIsReady = true)
       .catch(console.error)
     },

@@ -1,8 +1,7 @@
-import { PoinoSingEngine, schemata, utils } from './engine'
+import { getComputedSpeakers, synthesizeNote, schemata } from './engine'
 import { z } from 'zod'
 import { drawWave as _drawWave, drawSpec as _drawSpec } from './utils'
 
-const engine = new PoinoSingEngine()
 let speakers: schemata.SpeakerVoices
 
 export interface WorkerResult {
@@ -93,31 +92,14 @@ const messageSchema = z.union([
   })
 ]) satisfies z.ZodType<Message>
 
-function checkBackend (id: string) {
-  try {
-    const result = utils.canUseWebGPU
-    postMessage(id, true, result)
-  } catch (e) {
-    console.error(e)
-    postMessage(id, false, e)
-  }
-}
-
 function init (id: string) {
-  engine.init()
-  .then(() => {
-    speakers = PoinoSingEngine.getComputedSpeakers()
-    postMessage(id, true, null)
-  })
-  .catch((e) => {
-    console.error(e)
-    postMessage(id, false, e)
-  })
+  speakers = getComputedSpeakers()
+  postMessage(id, true, null)
 }
 
 function synthNote (id: string, data: SynthData) {
   try {
-    const result = engine.synthesizeNote(
+    const result = synthesizeNote(
       data.bpm,
       data.note,
       speakers[data.speakerId],
@@ -178,9 +160,6 @@ self.addEventListener('message', (event) => {
   const message = event.data as Message
 
   switch (message.type) {
-    case 'engine:backend:check':
-      checkBackend(message.id)
-      break
     case 'engine:init':
       init(message.id)
       break
