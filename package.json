@@ -14,8 +14,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^4.22.0",
-    "@tensorflow/tfjs-backend-webgpu": "^4.22.0",
     "idb-keyval": "^6.2.1",
     "pathe": "^1.1.2",
     "pinia": "^2.2.5",
