@@ -298,15 +298,9 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
         ]
       }
 
-      const x: number[] = []
-      const y: number[] = []
+      const x = env.map((point) => point[0])
+      const y = env.map((point) => point[1])
       const z = linspace(0, fs / 2, rfftLen)
-
-      env.forEach((point) => {
-        x.push(point[0])
-        y.push(point[1])
-      })
-
       const interpolated = interp(x, y, z)
 
       return [
