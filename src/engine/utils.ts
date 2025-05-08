@@ -337,6 +337,11 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
     return new Array(rfftLen).fill(apMag)
   })()
 
+  const shiftPhase = [...new Array(rfftLen)].map((_, i) => {
+    const x = ((i % 2) == 0) ? 1 : -1
+    return new Complex(Math.cos(x), Math.sin(x))
+  })
+
   const numSegments = 8
   const window = hanningWindow(segLen)
 
@@ -345,31 +350,25 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
       const envKey = key as EnvKeyEnum
       const spec = specs[envKey]
 
-      const specComp = spec.map((x) => new Complex(0, Math.pow(10, x) - 1))
-
       const specLowAvg = avg(spec.slice(0, specSplitFrerqIndex))
       const specHighAvg = avg(spec.slice(specSplitFrerqIndex))
 
       const ap = (specLowAvg >= specHighAvg) ? voicedAp : unvoicedAp
 
-      const leftBegin = segLen / 2
-      const leftEnd = segLen
-
-      const rightBegin = 0
-      const rightEnd = segLen / 2
-
       const segments: number[][] = []
 
       for (let i = 0; i < numSegments; i++) {
-        const phase = [...new Array(rfftLen)].map((_, i) => Math.random() * (2 * Math.PI) * ap[i])
-        const phaseComp = phase.map((x) => new Complex(Math.cos(x), Math.sin(x)))
+        const apPhase = [...new Array(rfftLen)].map((_, i) => {
+          const x = Math.random() * (2 * Math.PI) * ap[i]
+          return new Complex(Math.cos(x), Math.sin(x))
+        })
 
-        const segment = irfft(specComp.map((x, i) => x.multiply(phaseComp[i])))
-
-        const edited = [
-          ...segment.slice(leftBegin, leftEnd),
-          ...segment.slice(rightBegin, rightEnd),
-        ].map((x, i) => x * window[i])
+        const segment = irfft(
+          spec
+          .map((x) => new Complex(Math.pow(10, x) - 1, 0))
+          .map((x, i) => x.multiply(apPhase[i]))
+          .map((x, i) => x.multiply(shiftPhase[i]))
+        ).map((x, i) => x * window[i])
 
         const reverbed: number[] = new Array(segLen + (shiftLen * shiftNum)).fill(0)
 
@@ -377,7 +376,7 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
           const shift = shiftLen * j
 
           for (let k = 0; k < segLen; k++) {
-            reverbed[shift + k] += edited[k]
+            reverbed[shift + k] += segment[k]
           }
         }
 
