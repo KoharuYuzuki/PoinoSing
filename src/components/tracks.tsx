@@ -1312,7 +1312,7 @@ const component = defineComponent({
 
           if ((extension !== null) && (ustRegexp.test(extension))) {
             if (ustSnap === null) {
-              ustSnap = confirm('ノートを自動的にスナップしますか?')
+              ustSnap = confirm('ノートをスナップしますか?')
             }
 
             this.loadUST(file, ustSnap)
