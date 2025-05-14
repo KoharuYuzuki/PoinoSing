@@ -42,7 +42,7 @@ export function synthesizeNote(
     }
 
     kana.forEach(({envKey}) => phonemes.push(envKey))
-    kana.forEach(({vol}) => volumes.push((vol === undefined) ? 1 : vol))
+    kana.forEach(({vol}) => volumes.push(vol))
     note.phonemeTimings.toSorted((a, b) => a - b).forEach((tick) => phonemeTimings.push(tick))
   } else {
     const expect = 1

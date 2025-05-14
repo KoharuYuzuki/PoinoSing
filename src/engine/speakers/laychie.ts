@@ -35,747 +35,859 @@ export const laychieVoice: Readonly<SpeakerVoice> = {
   },
   kanas: {
     'あ': [
-      { envKey: 'a', len: null  }
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'い': [
-      { envKey: 'i', len: null  }
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'う': [
-      { envKey: 'u', len: null  }
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'え': [
-      { envKey: 'e', len: null  }
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'お': [
-      { envKey: 'o', len: null  }
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'か': [
-      { envKey: 'k', len: 0.015 },
-      { envKey: 'a', len: null  }
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'k', len: 0.015, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'き': [
-      { envKey: 'k', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'k', len: 0.025, vol: 0.20 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'く': [
-      { envKey: 'k', len: 0.025 },
-      { envKey: 'u', len: null  }
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'k', len: 0.025, vol: 0.20 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'け': [
-      { envKey: 'k', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'k', len: 0.025, vol: 0.20 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'こ': [
-      { envKey: 'k', len: 0.015 },
-      { envKey: 'o', len: null  }
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'k', len: 0.015, vol: 0.20 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'さ': [
-      { envKey: 's', len: 0.04  },
-      { envKey: 'a', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'し': [
-      { envKey: 's', len: 0.04  },
-      { envKey: 'i', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'す': [
-      { envKey: 's', len: 0.04  },
-      { envKey: 'u', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'せ': [
-      { envKey: 's', len: 0.04  },
-      { envKey: 'e', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'そ': [
-      { envKey: 's', len: 0.04  },
-      { envKey: 'o', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'た': [
-      { envKey: 't', len: 0.01  },
-      { envKey: 'a', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 't', len: 0.020, vol: 0.10 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ち': [
-      { envKey: 't', len: 0.04  },
-      { envKey: 'i', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.070, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'つ': [
-      { envKey: 't', len: 0.04  },
-      { envKey: 'u', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.070, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'て': [
-      { envKey: 't', len: 0.01  },
-      { envKey: 'e', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 't', len: 0.020, vol: 0.10 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'と': [
-      { envKey: 't', len: 0.01  },
-      { envKey: 'o', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 't', len: 0.020, vol: 0.10 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'な': [
-      { envKey: 'n', len: 0.025 },
-      { envKey: 'a', len: null  }
+      { envKey: 'n', len: 0.070, vol: 0.70 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'に': [
-      { envKey: 'n', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'n', len: 0.070, vol: 0.70 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ぬ': [
-      { envKey: 'n', len: 0.025 },
-      { envKey: 'u', len: null  }
+      { envKey: 'n', len: 0.070, vol: 0.70 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ね': [
-      { envKey: 'n', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'n', len: 0.070, vol: 0.70 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'の': [
-      { envKey: 'n', len: 0.025 },
-      { envKey: 'o', len: null  }
+      { envKey: 'n', len: 0.070, vol: 0.70 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'は': [
-      { envKey: 'h', len: 0.025 },
-      { envKey: 'a', len: null  }
+      { envKey: 'h', len: 0.070, vol: 0.10 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ひ': [
-      { envKey: 'h', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'h', len: 0.070, vol: 0.10 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ふ': [
-      { envKey: 'h', len: 0.025 },
-      { envKey: 'u', len: null  }
+      { envKey: 'h', len: 0.070, vol: 0.10 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'へ': [
-      { envKey: 'h', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'h', len: 0.070, vol: 0.10 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ほ': [
-      { envKey: 'h', len: 0.025 },
-      { envKey: 'o', len: null  }
+      { envKey: 'h', len: 0.070, vol: 0.10 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ま': [
-      { envKey: 'm', len: 0.015 },
-      { envKey: 'a', len: null  }
+      { envKey: 'm', len: 0.070, vol: 0.70 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'み': [
-      { envKey: 'm', len: 0.015 },
-      { envKey: 'i', len: null  }
+      { envKey: 'm', len: 0.070, vol: 0.70 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'む': [
-      { envKey: 'm', len: 0.01  },
-      { envKey: 'u', len: null  }
+      { envKey: 'm', len: 0.070, vol: 0.70 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'め': [
-      { envKey: 'm', len: 0.03  },
-      { envKey: 'e', len: null  }
+      { envKey: 'm', len: 0.070, vol: 0.70 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'も': [
-      { envKey: 'm', len: 0.03  },
-      { envKey: 'o', len: null  }
+      { envKey: 'm', len: 0.070, vol: 0.70 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'や': [
-      { envKey: 'y', len: 0.03  },
-      { envKey: 'a', len: null  }
+      { envKey: 'y', len: 0.080, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ゆ': [
-      { envKey: 'y', len: 0.03  },
-      { envKey: 'u', len: null  }
+      { envKey: 'y', len: 0.080, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'よ': [
-      { envKey: 'y', len: 0.03  },
-      { envKey: 'o', len: null  }
+      { envKey: 'y', len: 0.080, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ら': [
-      { envKey: 'r', len: 0.025 },
-      { envKey: 'a', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'り': [
-      { envKey: 'r', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'る': [
-      { envKey: 'r', len: 0.025 },
-      { envKey: 'u', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'れ': [
-      { envKey: 'r', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.30 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ろ': [
-      { envKey: 'r', len: 0.025 },
-      { envKey: 'o', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'わ': [
-      { envKey: 'w', len: 0.025 },
-      { envKey: 'a', len: null  }
+      { envKey: 'w', len: 0.100, vol: 0.50 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'うぃ': [
-      { envKey: 'w', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'w', len: 0.100, vol: 0.50 },
+      { envKey: 'i', len: null,  vol: 1.00 }
+    ],
+    'うぅ': [
+      { envKey: 'w', len: 0.100, vol: 0.50 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'うぇ': [
-      { envKey: 'w', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'w', len: 0.100, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'うぉ': [
-      { envKey: 'w', len: 0.025 },
-      { envKey: 'o', len: null  }
+      { envKey: 'w', len: 0.100, vol: 0.50 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ん': [
-      { envKey: 'n', len: null  }
+      { envKey: 'n', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'が': [
-      { envKey: 'g', len: 0.015 },
-      { envKey: 'a', len: null  }
+      { envKey: 'g', len: 0.030, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ぎ': [
-      { envKey: 'g', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ぐ': [
-      { envKey: 'g', len: 0.025 },
-      { envKey: 'u', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'げ': [
-      { envKey: 'g', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ご': [
-      { envKey: 'g', len: 0.015 },
-      { envKey: 'o', len: null  }
+      { envKey: 'g', len: 0.030, vol: 0.20 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ざ': [
-      { envKey: 'z', len: 0.04  },
-      { envKey: 'a', len: null  }
+      { envKey: 'z', len: 0.080, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'じ': [
-      { envKey: 'z', len: 0.04  },
-      { envKey: 'i', len: null  }
+      { envKey: 'z', len: 0.080, vol: 0.20 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ず': [
-      { envKey: 'z', len: 0.04  },
-      { envKey: 'u', len: null  }
+      { envKey: 'z', len: 0.080, vol: 0.20 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ぜ': [
-      { envKey: 'z', len: 0.04  },
-      { envKey: 'e', len: null  }
+      { envKey: 'z', len: 0.080, vol: 0.20 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ぞ': [
-      { envKey: 'z', len: 0.04  },
-      { envKey: 'o', len: null  }
+      { envKey: 'z', len: 0.080, vol: 0.20 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'だ': [
-      { envKey: 'd', len: 0.01  },
-      { envKey: 'a', len: null  }
+      { envKey: 'd', len: 0.060, vol: 0.10 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'でぃ': [
-      { envKey: 'd', len: 0.04  },
-      { envKey: 'i', len: null  }
+      { envKey: 'd', len: 0.060, vol: 0.10 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'どぅ': [
-      { envKey: 'd', len: 0.04  },
-      { envKey: 'u', len: null  }
+      { envKey: 'd', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'で': [
-      { envKey: 'd', len: 0.01  },
-      { envKey: 'e', len: null  }
+      { envKey: 'd', len: 0.060, vol: 0.10 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ど': [
-      { envKey: 'd', len: 0.01  },
-      { envKey: 'o', len: null  }
+      { envKey: 'd', len: 0.060, vol: 0.10 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ば': [
-      { envKey: 'b', len: 0.025 },
-      { envKey: 'a', len: null  }
+      { envKey: 'b', len: 0.060, vol: 0.10 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'び': [
-      { envKey: 'b', len: 0.025 },
-      { envKey: 'i', len: null  }
+      { envKey: 'b', len: 0.060, vol: 0.10 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ぶ': [
-      { envKey: 'b', len: 0.025 },
-      { envKey: 'u', len: null  }
+      { envKey: 'b', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'べ': [
-      { envKey: 'b', len: 0.025 },
-      { envKey: 'e', len: null  }
+      { envKey: 'b', len: 0.060, vol: 0.10 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ぼ': [
-      { envKey: 'b', len: 0.025 },
-      { envKey: 'o', len: null  }
+      { envKey: 'b', len: 0.060, vol: 0.10 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ぱ': [
-      { envKey: 'p', len: 0.005 },
-      { envKey: 'a', len: null  }
+      { envKey: 'p', len: 0.030, vol: 0.10 },
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ぴ': [
-      { envKey: 'p', len: 0.005 },
-      { envKey: 'i', len: null  }
+      { envKey: 'p', len: 0.030, vol: 0.10 },
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ぷ': [
-      { envKey: 'p', len: 0.005 },
-      { envKey: 'u', len: null  }
+      { envKey: 'p', len: 0.030, vol: 0.10 },
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ぺ': [
-      { envKey: 'p', len: 0.005 },
-      { envKey: 'e', len: null  }
+      { envKey: 'p', len: 0.030, vol: 0.10 },
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ぽ': [
-      { envKey: 'p', len: 0.005 },
-      { envKey: 'o', len: null  }
+      { envKey: 'p', len: 0.030, vol: 0.10 },
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ゔぁ': [
-      { envKey: 'v', len: 0.03  },
-      { envKey: 'a', len: null  }
+      { envKey: 'v', len: 0.060, vol: 0.10 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ゔぃ': [
-      { envKey: 'v', len: 0.03  },
-      { envKey: 'i', len: null  }
+      { envKey: 'v', len: 0.060, vol: 0.10 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ゔ': [
-      { envKey: 'v', len: 0.03  },
-      { envKey: 'u', len: null  }
+      { envKey: 'v', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ゔぇ': [
-      { envKey: 'v', len: 0.03  },
-      { envKey: 'e', len: null  }
+      { envKey: 'v', len: 0.060, vol: 0.10 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ゔぉ': [
-      { envKey: 'v', len: 0.03  },
-      { envKey: 'o', len: null  }
+      { envKey: 'v', len: 0.060, vol: 0.10 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'きゃ': [
-      { envKey: 'k', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'k', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'きぃ': [
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'k', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'きゅ': [
-      { envKey: 'k', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'k', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'きぇ': [
-      { envKey: 'k', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'k', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'きょ': [
-      { envKey: 'k', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'q', len: 0.080, vol: 0.00 },
+      { envKey: 'k', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'しゃ': [
-      { envKey: 's', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
-    'すぃ': [
-      { envKey: 's', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'i', len: null  }
+    'しぃ': [
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'しゅ': [
-      { envKey: 's', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'しぇ': [
-      { envKey: 's', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'しょ': [
-      { envKey: 's', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ちゃ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'ちぃ': [
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ちゅ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ちぇ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ちょ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'つぁ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: 0.020, vol: 0.40 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'つぃ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'i', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: 0.020, vol: 0.40 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'とぅ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: 0.020, vol: 0.40 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'つぇ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: 0.020, vol: 0.40 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'つぉ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'q', len: 0.050, vol: 0.00 },
+      { envKey: 't', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: 0.020, vol: 0.40 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'てゃ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'e', len: 0.01  },
-      { envKey: 'y', len: 0.01  },
-      { envKey: 'a', len: null  }
+      { envKey: 'q', len: 0.030, vol: 0.00 },
+      { envKey: 't', len: 0.030, vol: 0.30 },
+      { envKey: 'e', len: 0.020, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'てぃ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'e', len: 0.01  },
-      { envKey: 'y', len: 0.01  },
-      { envKey: 'i', len: null  }
+      { envKey: 'q', len: 0.030, vol: 0.00 },
+      { envKey: 't', len: 0.030, vol: 0.30 },
+      { envKey: 'e', len: 0.020, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'てゅ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'e', len: 0.01  },
-      { envKey: 'y', len: 0.01  },
-      { envKey: 'u', len: null  }
+      { envKey: 'q', len: 0.030, vol: 0.00 },
+      { envKey: 't', len: 0.030, vol: 0.30 },
+      { envKey: 'e', len: 0.020, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'u', len: null,  vol: 1.00 }
+    ],
+    'てぇ': [
+      { envKey: 'q', len: 0.030, vol: 0.00 },
+      { envKey: 't', len: 0.030, vol: 0.30 },
+      { envKey: 'e', len: 0.020, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'てょ': [
-      { envKey: 't', len: 0.03  },
-      { envKey: 'e', len: 0.01  },
-      { envKey: 'y', len: 0.01  },
-      { envKey: 'o', len: null  }
+      { envKey: 'q', len: 0.030, vol: 0.00 },
+      { envKey: 't', len: 0.030, vol: 0.30 },
+      { envKey: 'e', len: 0.020, vol: 0.30 },
+      { envKey: 'y', len: 0.020, vol: 0.40 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'にゃ': [
-      { envKey: 'n', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'n', len: 0.060, vol: 0.50 },
+      { envKey: 'y', len: 0.020, vol: 0.50 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'にぃ': [
+      { envKey: 'n', len: 0.060, vol: 0.50 },
+      { envKey: 'y', len: 0.020, vol: 0.50 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'にゅ': [
-      { envKey: 'n', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'n', len: 0.060, vol: 0.50 },
+      { envKey: 'y', len: 0.020, vol: 0.50 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'にぇ': [
-      { envKey: 'n', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'n', len: 0.060, vol: 0.50 },
+      { envKey: 'y', len: 0.020, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'にょ': [
-      { envKey: 'n', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'n', len: 0.060, vol: 0.50 },
+      { envKey: 'y', len: 0.020, vol: 0.50 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ひゃ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'h', len: 0.100, vol: 0.10 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'ひぃ': [
+      { envKey: 'h', len: 0.100, vol: 0.10 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ひゅ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'h', len: 0.100, vol: 0.10 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ひぇ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'h', len: 0.100, vol: 0.10 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ひょ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'h', len: 0.100, vol: 0.10 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'みゃ': [
-      { envKey: 'm', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'm', len: 0.080, vol: 0.50 },
+      { envKey: 'y', len: 0.070, vol: 0.50 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'みぃ': [
+      { envKey: 'm', len: 0.080, vol: 0.50 },
+      { envKey: 'y', len: 0.070, vol: 0.50 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'みゅ': [
-      { envKey: 'm', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'm', len: 0.080, vol: 0.50 },
+      { envKey: 'y', len: 0.070, vol: 0.50 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'みぇ': [
-      { envKey: 'm', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'm', len: 0.080, vol: 0.50 },
+      { envKey: 'y', len: 0.070, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'みょ': [
-      { envKey: 'm', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'm', len: 0.080, vol: 0.50 },
+      { envKey: 'y', len: 0.070, vol: 0.50 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'りゃ': [
-      { envKey: 'r', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.50 },
+      { envKey: 'y', len: 0.050, vol: 0.50 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'りぃ': [
+      { envKey: 'r', len: 0.050, vol: 0.50 },
+      { envKey: 'y', len: 0.050, vol: 0.50 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'りゅ': [
-      { envKey: 'r', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.50 },
+      { envKey: 'y', len: 0.050, vol: 0.50 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'りぇ': [
-      { envKey: 'r', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.50 },
+      { envKey: 'y', len: 0.050, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'りょ': [
-      { envKey: 'r', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'r', len: 0.050, vol: 0.50 },
+      { envKey: 'y', len: 0.050, vol: 0.50 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ぎゃ': [
-      { envKey: 'g', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'y', len: 0.050, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'ぎぃ': [
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'y', len: 0.050, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ぎゅ': [
-      { envKey: 'g', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'y', len: 0.050, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ぎぇ': [
-      { envKey: 'g', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'y', len: 0.050, vol: 0.30 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ぎょ': [
-      { envKey: 'g', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'g', len: 0.050, vol: 0.20 },
+      { envKey: 'y', len: 0.050, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'じゃ': [
-      { envKey: 'z', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'z', len: 0.100, vol: 0.50 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
-    'ずぃ': [
-      { envKey: 'z', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'i', len: null  }
+    'じぃ': [
+      { envKey: 'z', len: 0.100, vol: 0.50 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'じゅ': [
-      { envKey: 'z', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'z', len: 0.100, vol: 0.50 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'じぇ': [
-      { envKey: 'z', len: 0.03  },
-      { envKey: 'i', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'z', len: 0.100, vol: 0.50 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'じょ': [
-      { envKey: 'z', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'z', len: 0.100, vol: 0.50 },
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'でゃ': [
-      { envKey: 'd', len: 0.025 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'd', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'でゅ': [
-      { envKey: 'd', len: 0.025 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'd', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'でょ': [
-      { envKey: 'd', len: 0.025 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'd', len: 0.030, vol: 0.20 },
+      { envKey: 'y', len: 0.020, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'びゃ': [
-      { envKey: 'b', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'b', len: 0.040, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'びぃ': [
+      { envKey: 'b', len: 0.040, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'びゅ': [
-      { envKey: 'b', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'b', len: 0.040, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'びぇ': [
-      { envKey: 'b', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'b', len: 0.040, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'びょ': [
-      { envKey: 'b', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'b', len: 0.040, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ぴゃ': [
-      { envKey: 'p', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'p', len: 0.020, vol: 0.10 },
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'y', len: 0.020, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
+    ],
+    'ぴぃ': [
+      { envKey: 'p', len: 0.020, vol: 0.10 },
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'y', len: 0.020, vol: 0.20 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
     'ぴゅ': [
-      { envKey: 'p', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'u', len: null  }
+      { envKey: 'p', len: 0.020, vol: 0.10 },
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'y', len: 0.020, vol: 0.20 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ぴぇ': [
-      { envKey: 'p', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'p', len: 0.020, vol: 0.10 },
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'y', len: 0.020, vol: 0.20 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ぴょ': [
-      { envKey: 'p', len: 0.015 },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'p', len: 0.020, vol: 0.10 },
+      { envKey: 'q', len: 0.060, vol: 0.00 },
+      { envKey: 'y', len: 0.020, vol: 0.20 },
+      { envKey: 'o', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'ふぁ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'h', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: 0.020, vol: 0.30 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ふぃ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'i', len: null  }
+      { envKey: 'h', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: 0.020, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
+    ],
+    'ふぅ': [
+      { envKey: 'h', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: 0.020, vol: 0.30 },
+      { envKey: 'u', len: null,  vol: 1.00 }
     ],
     'ふぇ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'h', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: 0.020, vol: 0.30 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
     'ふぉ': [
-      { envKey: 'h', len: 0.015 },
-      { envKey: 'u', len: 0.02  },
-      { envKey: 'o', len: null  }
+      { envKey: 'h', len: 0.060, vol: 0.10 },
+      { envKey: 'u', len: 0.020, vol: 0.30 },
+      { envKey: 'o', len: null,  vol: 1.00 }
+    ],
+
+    /* ================ */
+
+    'すぃ': [
+      { envKey: 's', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
+    ],
+    'ずぃ': [
+      { envKey: 'z', len: 0.100, vol: 0.20 },
+      { envKey: 'y', len: 0.030, vol: 0.30 },
+      { envKey: 'i', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'いぇ': [
-      { envKey: 'i', len: 0.03  },
-      { envKey: 'y', len: 0.02  },
-      { envKey: 'e', len: null  }
+      { envKey: 'y', len: 0.100, vol: 0.50 },
+      { envKey: 'e', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'くゎ': [
-      { envKey: 'k', len: 0.03  },
-      { envKey: 'w', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'k', len: 0.030, vol: 0.20 },
+      { envKey: 'w', len: 0.080, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
     'ぐゎ': [
-      { envKey: 'g', len: 0.03  },
-      { envKey: 'w', len: 0.02  },
-      { envKey: 'a', len: null  }
+      { envKey: 'g', len: 0.030, vol: 0.20 },
+      { envKey: 'w', len: 0.080, vol: 0.20 },
+      { envKey: 'a', len: null,  vol: 1.00 }
     ],
 
     /* ================ */
 
     'っ': [
-      { envKey: 'q', len: null  }
+      { envKey: 'q', len: null,  vol: 1.00 }
     ],
     '、': [
-      { envKey: 'q', len: null  }
+      { envKey: 'q', len: null,  vol: 1.00 }
     ]
   }
 }
