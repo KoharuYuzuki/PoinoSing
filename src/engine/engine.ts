@@ -6,7 +6,7 @@ import type {
   KanaEnum, EnvKeyEnum, Note, SpeakerVoiceComputed
 } from './schemata'
 import {
-  int, tick2sec, pitch2freq, computeSpeakerVoice
+  int, tick2sec, pitch2freq, computeSpeakerVoice, hanningWindow, sum
 } from './utils'
 import { laychieVoice } from './speakers/laychie'
 import { layneyVoice } from './speakers/layney'
@@ -132,6 +132,41 @@ function synthWave(
   const waveLen = int(fs * duration)
   const freq    = pitch2freq(pitch)
 
+  const volumeSeq = volumes.flatMap((volume, index) => {
+    const timing = [...timingPercent, 1]
+    const sec = duration * (timing[index + 1] - timing[index])
+    const numSample = 512
+    return new Array(int(numSample * sec)).fill(volume)
+  })
+
+  const kernelSize = 32
+  const padSize = Math.floor(kernelSize / 2)
+  const hanning = hanningWindow(kernelSize)
+  const coef = 1 / sum(hanning)
+  const kernel = hanning.map((x) => x * coef)
+
+  const volumeSeqPadded = [
+    ...new Array(padSize).fill(0),
+    ...volumeSeq,
+    ...new Array(padSize).fill(0),
+  ]
+
+  const volumeSeqSmoothed = new Array(volumeSeq.length).fill(0)
+
+  for (let i = 0; i < volumeSeq.length; i++) {
+    for (let j = 0; j < kernelSize; j++) {
+      const volume = volumeSeqPadded[i + j]
+      volumeSeqSmoothed[i] += volume * kernel[j]
+    }
+  }
+
+  for (let i = 0; i < volumeSeqSmoothed.length; i++) {
+    const percent = i / volumeSeqSmoothed.length
+    volumeSeqSmoothed[i] *= (
+      0.5 + (Math.sin(Math.PI * (Math.log10(percent * 9 + 1) / Math.log10(10))) * 0.5)
+    )
+  }
+
   const wave: number[] = new Array(waveLen).fill(0)
   let position = 0
 
@@ -143,9 +178,9 @@ function synthWave(
     if (indexApproximate === -1) break
 
     const phoneme = phonemes[indexApproximate]
-    let phonemeVolume = volumes[indexApproximate]
 
     let segment: number[]
+    let volume = volumeSeqSmoothed[int(volumeSeqSmoothed.length * percent)]
 
     if (envKeys.includes(phoneme as EnvKeyEnum)) {
       const waves = voice.waves[phoneme as EnvKeyEnum]
@@ -179,13 +214,8 @@ function synthWave(
       }
 
       segment = segmentSummed
-      phonemeVolume *= phonemeVolumeSummed
+      volume *= phonemeVolumeSummed
     }
-
-    const volume = (
-      phonemeVolume *
-      (0.5 + (Math.sin(Math.PI * (Math.log10(percent * 9 + 1) / Math.log10(10))) * 0.5))
-    )
 
     const max = segment.map((x) => Math.abs(x)).reduce((a, b) => Math.max(a, b))
     const adjuster = (max != 0) ? volume / max : 0
