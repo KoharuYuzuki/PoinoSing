@@ -135,11 +135,11 @@ function synthWave(
   const volumeSeq = volumes.flatMap((volume, index) => {
     const timing = [...timingPercent, 1]
     const sec = duration * (timing[index + 1] - timing[index])
-    const numSample = 512
-    return new Array(int(numSample * sec)).fill(volume)
+    const numSample = 256
+    return new Array(Math.ceil(numSample * sec)).fill(volume)
   })
 
-  const kernelSize = 32
+  const kernelSize = 4
   const padSize = Math.floor(kernelSize / 2)
   const hanning = hanningWindow(kernelSize)
   const coef = 1 / sum(hanning)

@@ -317,7 +317,7 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
   const voicedAp = (() => {
     const ratio = 0.4
     const tanhMag = 20
-    const apMag = 0.6
+    const apMag = 1.0
 
     return linspace(
       -ratio * tanhMag,
@@ -327,7 +327,7 @@ export function computeSpeakerVoice (voice: SpeakerVoice) {
   })()
 
   const unvoicedAp = (() => {
-    const apMag = 0.6
+    const apMag = 1.0
     return new Array(rfftLen).fill(apMag)
   })()
 
