@@ -175,32 +175,6 @@ export const envKeys = [
   'q'
 ] as const
 
-export const envKeyVolumes: Readonly<{
-  [key in typeof envKeys[number]]: number
-}> = {
-  'a': 1.0,
-  'i': 1.0,
-  'u': 1.0,
-  'e': 1.0,
-  'o': 1.0,
-  'k': 0.4,
-  's': 0.4,
-  't': 0.4,
-  'n': 0.4,
-  'h': 0.4,
-  'm': 0.4,
-  'y': 0.4,
-  'r': 0.4,
-  'w': 0.4,
-  'g': 0.4,
-  'z': 0.4,
-  'd': 0.4,
-  'b': 0.4,
-  'p': 0.4,
-  'v': 0.4,
-  'q': 0.0
-}
-
 export const speakerIds = [
   'laychie',
   'layney'
@@ -225,7 +199,11 @@ export const wavesSchema  = z.number().array().array()
 export const envRecordSchema  = z.record(envKeyEnumSchema, pointsSchema)
 export const waveRecordSchema = z.record(envKeyEnumSchema, wavesSchema)
 
-export const envLenSchema     = z.object({ envKey: envKeyEnumSchema, len: z.number().min(0).nullable() })
+export const envLenSchema = z.object({
+  envKey: envKeyEnumSchema,
+  len: z.number().min(0).nullable(),
+  vol: z.number().min(0).optional()
+})
 export const kanaRecordSchema = z.record(kanaEnumSchema, z.array(envLenSchema))
 
 export type BPM = number

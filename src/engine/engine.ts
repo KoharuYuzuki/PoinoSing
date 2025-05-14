@@ -1,5 +1,5 @@
 import {
-  kanas, envKeys, phonemeMixPattern, envKeyVolumes,
+  kanas, envKeys, phonemeMixPattern,
   bpmSchema, noteSchema, speakerVoiceComputedSchema,
 } from './schemata'
 import type {
@@ -27,11 +27,13 @@ export function synthesizeNote(
   const phonemeTimingsLen = note.phonemeTimings.length
 
   const phonemes: (EnvKeyEnum | string)[] = []
+  const volumes: number[] = []
+
   const phonemeTimings: number[] = []
 
   if ((kanas as unknown as string[]).includes(lyric)) {
-    const kana = voice.kanas[lyric as KanaEnum]
-    const envsLen = kana?.length || 0
+    const kana = voice.kanas[lyric as KanaEnum]!
+    const envsLen = kana.length || 0
 
     if (phonemeTimingsLen !== envsLen) {
       throw new Error(
@@ -39,7 +41,8 @@ export function synthesizeNote(
       )
     }
 
-    kana?.forEach(({envKey}) => phonemes.push(envKey))
+    kana.forEach(({envKey}) => phonemes.push(envKey))
+    kana.forEach(({vol}) => volumes.push((vol === undefined) ? 1 : vol))
     note.phonemeTimings.toSorted((a, b) => a - b).forEach((tick) => phonemeTimings.push(tick))
   } else {
     const expect = 1
@@ -51,6 +54,7 @@ export function synthesizeNote(
     }
 
     phonemes.push(lyric as EnvKeyEnum | string)
+    volumes.push(1)
     phonemeTimings.push(note.phonemeTimings[0])
   }
 
@@ -87,6 +91,7 @@ export function synthesizeNote(
     volumeSeg,
     phonemeTimingPercent,
     phonemes,
+    volumes,
     voice
   )
 
@@ -119,6 +124,7 @@ function synthWave(
   volSeg: number[],
   timingPercent: number[],
   phonemes: (EnvKeyEnum | string)[],
+  volumes: number[],
   voice: SpeakerVoiceComputed
 ) {
   const fs      = voice.fs
@@ -137,9 +143,9 @@ function synthWave(
     if (indexApproximate === -1) break
 
     const phoneme = phonemes[indexApproximate]
+    let phonemeVolume = volumes[indexApproximate]
 
     let segment: number[]
-    let phonemeVolume: number
 
     if (envKeys.includes(phoneme as EnvKeyEnum)) {
       const waves = voice.waves[phoneme as EnvKeyEnum]
@@ -147,8 +153,6 @@ function synthWave(
 
       const waveIndex = Math.floor(Math.random() * waves.length)
       segment = waves[waveIndex]
-
-      phonemeVolume = envKeyVolumes[phoneme as EnvKeyEnum]
     } else {
       const split = phoneme.replaceAll(' ', '').split(',')
       const segmentSummed = [...new Array(segLen)].fill(0)
@@ -171,11 +175,11 @@ function synthWave(
           segmentSummed[j] += segment[j]
         }
 
-        phonemeVolumeSummed += envKeyVolumes[envKey] * value
+        phonemeVolumeSummed += value
       }
 
       segment = segmentSummed
-      phonemeVolume = phonemeVolumeSummed
+      phonemeVolume *= phonemeVolumeSummed
     }
 
     const volume = (
